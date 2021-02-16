@@ -3,5 +3,5 @@
         background: -moz-linear-gradient(top, #60DA7F 0%, #47AE69 50%, #248883 100%);
         background: -webkit-linear-gradient(top, #60DA7F 0%, #47AE69 50%, #248883 100%);
         background: linear-gradient(to bottom, #60DA7F 0%, #47AE69 50%, #248883 100%);
-        background-size: contain;
+        background-size: cover;
     }
