@@ -127,7 +127,7 @@ function getName(index) {
     while(currentLetter != ' ') {
         currentLetter = pickLetter(index, currentLetter.charCodeAt(0));
 
-        if(wb == true && Math.round(10 * Math.random())) {
+        if((wb == true) && (Math.round(4 * Math.random()) == 0)) {
             name += "'";
         }
 
