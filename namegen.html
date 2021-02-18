@@ -4,9 +4,48 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Le epic Name Gen'rator</title>
 </head>
 <body>
-    
+    <h1>Welcome to the most wonderful and amazing name generator on this website!</h1>
+
+    <div class="container">
+        <label for="setToAdd">Add data to the index</label>
+        <input type="text" id="setToAdd" name="setToAdd" placeholder="name, name, ...">
+        <button type="button" onclick="addSet(currentIndex, 'setToAdd')">Add</button>
+
+        <label for="addPresets">Add Preset Indices</label>
+        <button type="button" onclick="currentIndex = addCarz(currentIndex)">Car Brands</button>
+
+        <label class="switch">
+            Enable Worldbuilding?
+            <input type="checkbox" id="wbcheck" onclick="wbcheck()">
+        </label>
+
+        <label for="numberOfNames">Number of Names to generate</label>
+        <input type="range" min="1" max="50" value="10" class="slider" id="numberOfNames">
+
+        <label for="minLength">Minimum Name Length</label>
+        <input type="range" min="1" max="10" value="1" class="slider" id="minLength">
+
+        <label for="maxLength">Maximum Name Length</label>
+        <input type="range" min="2" max="1000" value="1000" class="slider" id="maxLength">
+
+        <button type="button" onclick="generateNames(currentIndex)">Generate Names</button>
+
+        <div class="output">
+            <p id="output">
+
+            </p>
+        </div>
+
+        <button type="button" onclick="currentIndex = resetIndex()">Reset Index</button>
+
+        <script src="namegen.js">
+
+        </script>
+
+    </div>
+
 </body>
 </html>
