@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="styles/style1.css" rel = "stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet"> 
     <title>Le epic Name Gen'rator</title>
 </head>
 <body>
@@ -24,12 +26,17 @@
 
         <label for="numberOfNames">Number of Names to generate</label>
         <input type="range" min="1" max="50" value="10" class="slider" id="numberOfNames">
+        <p id="numberOfNamesOutput"></p>
 
         <label for="minLength">Minimum Name Length</label>
         <input type="range" min="1" max="10" value="1" class="slider" id="minLength">
+        <p id="minLengthOutput"></p>
+
 
         <label for="maxLength">Maximum Name Length</label>
         <input type="range" min="2" max="1000" value="1000" class="slider" id="maxLength">
+        <p id="maxLengthOutput"></p>
+
 
         <button type="button" onclick="generateNames(currentIndex)">Generate Names</button>
 

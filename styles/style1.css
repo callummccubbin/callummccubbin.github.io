@@ -11,3 +11,29 @@
         font-family: "Maven Pro", sans-serif;
         color: #0F2A3B;
     }
+
+    input[type=text], select {
+        width: 300px;
+        height: 100px;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    button[type=button] {
+        width: 20%;
+        background-color: #248883;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button[type=button]:hover {
+        background-color: #1c6b67;
+      }

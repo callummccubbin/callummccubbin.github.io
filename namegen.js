@@ -1,6 +1,26 @@
 let currentIndex = resetIndex();
 var wb = false;
 
+var countSlider = document.getElementById("numberOfNames");
+var minSlider = document.getElementById("minLength");
+var maxSlider = document.getElementById("maxLength");
+
+var countSliderOutput = document.getElementById("numberOfNamesOutput");
+var minLengthOutput = document.getElementById("minLengthOutput");
+var maxLengthOutput = document.getElementById("maxLengthOutput");
+
+countSlider.oninput = function() {
+    countSliderOutput.innerHTML = this.value;
+}
+
+minSlider.oninput = function() {
+    minLengthOutput.innerHTML = this.value;
+}
+
+maxSlider.oninput = function() {
+    maxLengthOutput.innerHTML = this.value;
+}
+
 function resetIndex() {
     let index = new Array(27);
 
@@ -17,14 +37,40 @@ function wbcheck() {
 
 function generateNames(index) {
 
-    countSlider = document.getElementById("numberOfNames");
+
+
     count = countSlider.value;
+    let min = Math.min(minSlider.value, maxSlider.value);
+    let max = Math.max(maxSlider.value, minSlider.value);
+    
+    /*console.log(minSlider.value, "minslider");
+    console.log(maxSlider.value, "maxslider");
+    console.log(maxSlider.value > minSlider.value, "maxS is greater than minS");
+    console.log(min, "is the min");
+    console.log(max, "is the max");
+    console.log(Math.min(min, max), "is the lower value");
+    console.log(Math.max(min, max), "is the higher value");
+*/
+/*
+    if(min < max) {
+        console.log("min is less than max");
+    } else if(min > max) {
+        console.log("min is greater than max");
+    }
+*/
+
     console.log(count, "is the count")
+    console.log(min, "is the min");
+    console.log(max, "is the max");
 
     let output = "";
     for (i = 0; i <= count; i++) {
-        let name = getName(index);
-        output = output + " " + name;
+        let name = getName(index, max);
+        if(name.length < min) {
+            i--;
+        } else {
+            output = output + " " + name;
+        }
     }
     document.getElementById("output").innerHTML = output;
     return output;
@@ -33,11 +79,11 @@ function generateNames(index) {
 function addSet(index, data) {
 
     data = document.getElementById(data).value;
-    console.log(data);
+    //console.log(data);
     let dataSet = data.split(", ");
 
     for (let item of dataSet) {
-        console.log(item);
+        //console.log(item);
         item = item.toLowerCase();
         index = addIndex(index, item);
     }
@@ -117,10 +163,10 @@ function addIndex(index, data) {
     return index;
 }
 
-function getName(index) {
+function getName(index, max) {
 
     let name = "";
-    console.log(name);
+    //console.log(name);
     let currentLetter = pickLetter(index, 96);
     name += currentLetter;
 
@@ -131,21 +177,25 @@ function getName(index) {
             name += "'";
         }
 
+        if(name.length >= max) {
+            break;
+        }
+
         name += currentLetter;
     }
-    console.log(name, "is the full name");
+    //console.log(name, "is the full name");
     return name;
 }
 
 function pickLetter(index, input) {
 
     let row = index[input - 96];
-    console.log(input - 96, "is the row");
-    console.log(row, "is the row content");
+    //console.log(input - 96, "is the row");
+    //console.log(row, "is the row content");
     let num = Math.round((row.length - 1) * Math.random());
-    console.log(num, "is the num");
+    //console.log(num, "is the num");
 
     let letter = row.charAt(num);
-    console.log(letter, "is the letter")
+    //console.log(letter, "is the letter")
     return letter;
 }
