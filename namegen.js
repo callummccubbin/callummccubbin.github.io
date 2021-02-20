@@ -37,8 +37,6 @@ function wbcheck() {
 
 function generateNames(index) {
 
-
-
     count = countSlider.value;
     let min = Math.min(minSlider.value, maxSlider.value);
     let max = Math.max(maxSlider.value, minSlider.value);
@@ -59,19 +57,27 @@ function generateNames(index) {
     }
 */
 
-    console.log(count, "is the count")
-    console.log(min, "is the min");
-    console.log(max, "is the max");
+    //console.log(count, "is the count")
+    //console.log(min, "is the min");
+    //console.log(max, "is the max");
+
+    console.log(index[0] == undefined);
 
     let output = "";
-    for (i = 0; i <= count; i++) {
-        let name = getName(index, max);
-        if(name.length < min) {
-            i--;
-        } else {
-            output = output + " " + name;
+    
+    if (index[0] == undefined) {
+        output = "Error: index is empty. Add words to it or select a preset index"
+    } else {
+        for (i = 0; i <= count; i++) {
+            let name = getName(index, max);
+            if(name.length < min) {
+                i--;
+            } else {
+                output = output + " " + name;
+            }
         }
     }
+
     document.getElementById("output").innerHTML = output;
     return output;
 }
