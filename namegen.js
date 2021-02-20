@@ -41,37 +41,28 @@ function generateNames(index) {
     let min = Math.min(minSlider.value, maxSlider.value);
     let max = Math.max(maxSlider.value, minSlider.value);
     
-    /*console.log(minSlider.value, "minslider");
-    console.log(maxSlider.value, "maxslider");
-    console.log(maxSlider.value > minSlider.value, "maxS is greater than minS");
-    console.log(min, "is the min");
-    console.log(max, "is the max");
-    console.log(Math.min(min, max), "is the lower value");
-    console.log(Math.max(min, max), "is the higher value");
-*/
-/*
-    if(min < max) {
-        console.log("min is less than max");
-    } else if(min > max) {
-        console.log("min is greater than max");
-    }
-*/
-
     //console.log(count, "is the count")
     //console.log(min, "is the min");
     //console.log(max, "is the max");
 
-    console.log(index[0] == undefined);
+    //console.log(index[0] == undefined);
 
     let output = "";
-    
+    let tries = 0;
+
     if (index[0] == undefined) {
         output = "Error: index is empty. Add words to it or select a preset index"
     } else {
         for (i = 0; i <= count; i++) {
             let name = getName(index, max);
+            //console.log(name.length, "name length");
             if(name.length < min) {
                 i--;
+                tries++;
+                if(tries > 1000) {
+                    output = "Error. Maximum number of tries reached. Change parameters or index.";
+                    break;
+                }
             } else {
                 output = output + " " + name;
             }
@@ -184,7 +175,8 @@ function getName(index, max) {
         if((wb == true) && (Math.round(4 * Math.random()) == 0)) {
             name += "'";
         }
-
+        //console.log(name.length, "is the length");
+        //console.log(max, "is the max");
         if(name.length >= max) {
             break;
         }
