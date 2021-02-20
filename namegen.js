@@ -82,9 +82,10 @@ function generateNames(index) {
     return output;
 }
 
-function addSet(index, data) {
+function addSet(index, dataToAdd) {
 
-    data = document.getElementById(data).value;
+    data = document.getElementById(dataToAdd).value;
+    //console.log(document.getElementById(dataToAdd).value);
     //console.log(data);
     let dataSet = data.split(", ");
 
@@ -94,8 +95,9 @@ function addSet(index, data) {
         index = addIndex(index, item);
     }
 
-    console.log(index, "is the index");
-    console.log(currentIndex, "is the currentIndex");
+    //console.log(index, "is the index");
+    //console.log(currentIndex, "is the currentIndex");
+    document.getElementById(dataToAdd).value = "";
     return index;
 
 }
