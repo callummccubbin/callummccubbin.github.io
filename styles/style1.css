@@ -21,6 +21,7 @@
 
     label {
         font-family: 'Lato', sans-serif;
+        display: block;
     }
 
     .intro {
@@ -30,9 +31,16 @@
     }
 
     .container {
+        display: flex;
         margin: 30px 150px;
         background-color: #aff1ab32;
         padding: 30px 20px;
+    }
+
+    .container-side {
+        width: 50%;
+        padding: 14px 16px;
+        float: right;
     }
 
     .topnav {
@@ -83,6 +91,9 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
+        font-family: 'Lato', sans-serif;
+        display: block;
+        width: 50%;
     }
 
     button[type=button]:hover {
