@@ -153,9 +153,11 @@ function addSet(index, dataToAdd) {
     let dataSet = data.split(", ");
 
     for (let item of dataSet) {
-        //console.log(item);
-        item = item.toLowerCase();
-        index = addIndex(index, item);
+        words = item.split(" ");
+        for (let word of words) {
+            word = word.toLowerCase();
+            index = addIndex(index, word);
+        }
     }
 
     //console.log(index, "is the index");

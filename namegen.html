@@ -57,17 +57,23 @@
     
             <label for="numberOfNames">Number of Names to generate</label>
             <input type="range" min="1" max="50" value="10" class="slider" id="numberOfNames">
-            <p id="numberOfNamesOutput"></p>
+            <div class="sliderOutput">
+                <p id="numberOfNamesOutput"></p>
+            </div>
     
             <label for="minLength">Minimum Name Length</label>
             <input type="range" min="1" max="10" value="1" class="slider" id="minLength">
-            <p id="minLengthOutput"></p>
-    
-    
+
+            <div class="sliderOutput">
+                <p id="minLengthOutput"></p>
+            </div>
+
+
             <label for="maxLength">Maximum Name Length</label>
             <input type="range" min="2" max="100" value="100" class="slider" id="maxLength">
-            <p id="maxLengthOutput"></p>
-    
+            <div class="sliderOutput">
+                <p id="maxLengthOutput"></p>
+            </div>
     
             <button type="button" onclick="generateNames(currentIndex)">Generate Names</button>
     

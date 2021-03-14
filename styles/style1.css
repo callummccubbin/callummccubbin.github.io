@@ -32,7 +32,7 @@
 
     .container {
         display: flex;
-        margin: 30px 150px;
+        margin: 30px 180px;
         background-color: #aff1ab32;
         padding: 30px 20px;
     }
@@ -41,6 +41,16 @@
         width: 50%;
         padding: 14px 16px;
         float: right;
+    }
+
+    .sliderOutput {
+        display: inline-block;
+    }
+
+    .output {
+        background-color: #aff1ab32;
+        padding: 14px 16px;
+        margin-top: 5%;
     }
 
     .topnav {
