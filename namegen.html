@@ -32,6 +32,9 @@
         </p>
         <p>
             Try the preset indices, or add your own names into the current index to totally customize the output.
+            It is important to make sure your index is the right size: indices that are too small can leave all the
+            generated words sounding the same, but indices that are too large make the generated words too incomprehensible.
+            Anywhere between 20 to 100 words is a reasonable size for an index.
             It is recommended to type the names you are going to input into the index somewhere else in case you want to reset it;
             if you accidentally add more than you want to, you'll need to reset the entire index and start over.
         </p>
@@ -61,7 +64,7 @@
             </label>
     
             <label for="numberOfNames">Number of Names to generate</label>
-            <input type="range" min="1" max="50" value="10" class="slider" id="numberOfNames">
+            <input type="range" min="1" max="100" value="10" class="slider" id="numberOfNames">
             <div class="sliderOutput">
                 <p id="numberOfNamesOutput"></p>
             </div>
