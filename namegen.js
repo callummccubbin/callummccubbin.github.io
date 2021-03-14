@@ -8,6 +8,10 @@ var maxSlider = document.getElementById("maxLength");
 var countSliderOutput = document.getElementById("numberOfNamesOutput");
 var minLengthOutput = document.getElementById("minLengthOutput");
 var maxLengthOutput = document.getElementById("maxLengthOutput");
+countSliderOutput.innerHTML = countSlider.value;
+minLengthOutput.innerHTML = minSlider.value;
+maxLengthOutput.innerHTML = maxSlider.value;
+
 
 countSlider.oninput = function() {
     countSliderOutput.innerHTML = this.value;
@@ -53,7 +57,7 @@ function generateNames(index) {
     if (index[0] == undefined) {
         output = "Error: index is empty. Add words to it or select a preset index"
     } else {
-        for (i = 0; i <= count; i++) {
+        for (i = 0; i < count; i++) {
             let name = getName(index, max);
             //console.log(name.length, "name length");
             if(name.length < min) {
