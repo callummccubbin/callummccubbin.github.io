@@ -23,8 +23,14 @@
         font-family: 'Lato', sans-serif;
     }
 
+    .intro {
+        margin: 10px 150px;
+        background-color: #aff1ab32;
+        padding: 10px 20px;
+    }
+
     .container {
-        margin: 100px 150px;
+        margin: 30px 150px;
         background-color: #aff1ab32;
         padding: 30px 20px;
     }

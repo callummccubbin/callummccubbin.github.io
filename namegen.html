@@ -10,7 +10,32 @@
     <title>EC's Elaborate Name Generator</title>
 </head>
 <body>
+
+    <div class="topnav">
+        <a href="index.html">Callum McCubbin</a>
+        <a href="#news">Projects</a>
+        <a href="#contact">Contact</a>
+        <a href="#about">About</a>
+    </div> 
+
     <h1>Welcome to the most wonderful and amazing name generator on this website!</h1>
+
+    <div class="intro">
+        <p>
+            This name generator takes in an index of names or other words as its input, then uses the frequencies with which 
+            certain letters appear after other letters and generates names based on random noise.
+            The names generated here aren't necessarily coherent in terms of normal English phonetic structure, but with a
+            little bit of patience and creativity you can make a variety of interesting and new never-before-seen names.
+        </p>
+        <p>
+            Try the preset indices, or add your own names into the current index to totally customize the output.
+            It is recommended to type the names you are going to input into the index somewhere else in case you want to reset it;
+            if you accidentally add more than you want to, you'll need to reset the entire index and start over.
+        </p>
+
+
+
+    </div>
 
     <div class="container">
         <label for="setToAdd">Add data to the index</label>
@@ -20,8 +45,6 @@
         <label for="addPresets">Add Preset Indices</label>
         <button type="button" onclick="currentIndex = addPreset(currentIndex, dataCars)">Car Brands</button>
         <button type="button" onclick="currentIndex = addPreset(currentIndex, dataGreek)">Greek Mythos</button>
-
-
 
         <label class="switch">
             Enable Worldbuilding?
