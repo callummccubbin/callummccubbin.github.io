@@ -7,6 +7,7 @@
     <link href="styles/style1.css" rel = "stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet"> 
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Montserrat:wght@500&display=swap" rel="stylesheet"> 
     <title>EC's Elaborate Name Generator</title>
 </head>
 <body>
@@ -18,7 +19,9 @@
         <a href="#about">About</a>
     </div> 
 
-    <h1>Welcome to the most wonderful and amazing name generator on this website!</h1>
+    <div class="title">
+        <h1>Welcome to the most wonderful and amazing name generator on this website!</h1>
+    </div>
 
     <div class="intro">
         <p>
@@ -45,7 +48,9 @@
             <button type="button" onclick="currentIndex = addPreset(currentIndex, dataCars)">Car Brands</button>
             <button type="button" onclick="currentIndex = addPreset(currentIndex, dataGreek)">Greek Mythos</button>
 
-            <button type="button" onclick="currentIndex = resetIndex()">Reset Index</button>
+            <div class="resetButton">
+                <button type="button" onclick="currentIndex = resetIndex()">Reset Index</button>
+            </div>
 
         </div>
 
