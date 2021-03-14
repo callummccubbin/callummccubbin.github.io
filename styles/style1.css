@@ -24,7 +24,7 @@
     }
 
     .container {
-        margin: 80px 80px;
+        margin: 100px 150px;
         background-color: #aff1ab32;
         padding: 30px 20px;
     }
@@ -71,7 +71,7 @@
     button[type=button] {
         width: 20%;
         background-color: #248883;
-        color: white;
+        color: #c9f8c6;
         padding: 14px 20px;
         margin: 8px 0;
         border: none;

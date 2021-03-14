@@ -12,6 +12,74 @@ countSliderOutput.innerHTML = countSlider.value;
 minLengthOutput.innerHTML = minSlider.value;
 maxLengthOutput.innerHTML = maxSlider.value;
 
+let dataCars = [
+    "Ford",
+    "Mercedes",
+    "Chevrolet",
+    "Subaru",
+    "Jeep",
+    "Buick",
+    "Mclaren",
+    "Honda",
+    "Nissan",
+    "Acura",
+    "Audi",
+    "Tesla",
+    "Cadillac",
+    "Mazda",
+    "Volkswagen",
+    "Volvo",
+    "Porsche",
+    "Suzuki",
+    "Chrysler",
+    "Maserati",
+    "Ferrari",
+    "Fiat"
+]
+
+let dataGreek = [
+    "Aphrodite",
+    "Apollo",
+    "Ares",
+    "Artemis",
+    "Athena",
+    "Demeter",
+    "Dionysus",
+    "Hades",
+    "Hephaestus",
+    "Hera",
+    "Hermes",
+    "Hestia",
+    "Poseidon",
+    "Zeus",
+    "Enceladus",
+    "Porphyrion",
+    "Lethe",
+    "Medusa",
+    "Helios",
+    "Achilles",
+    "Ariadne",
+    "Ajax",
+    "Daedalus",
+    "Diomedes",
+    "Minos",
+    "Theseus",
+    "Jason",
+    "Odysseus",
+    "Orpheus",
+    "Perseus",
+    "Pandora",
+    "Agamemnon",
+    "Oedipus",
+    "Peleus",
+    "Midas",
+    "Tyndareus",
+    "Patroclus",
+    "Atreus",
+    "Circe",
+    "Menelaus"
+]
+
 
 countSlider.oninput = function() {
     countSliderOutput.innerHTML = this.value;
@@ -97,31 +165,7 @@ function addSet(index, dataToAdd) {
 
 }
 
-function addCarz(index) {
-    let data = [
-        "Ford",
-        "Mercedes",
-        "Chevrolet",
-        "Subaru",
-        "Jeep",
-        "Buick",
-        "Mclaren",
-        "Honda",
-        "Nissan",
-        "Acura",
-        "Audi",
-        "Tesla",
-        "Cadillac",
-        "Mazda",
-        "Volkswagen",
-        "Volvo",
-        "Porsche",
-        "Suzuki",
-        "Chrysler",
-        "Maserati",
-        "Ferrari",
-        "Fiat"
-    ]
+function addPreset(index, data) {
 
     for (let item of data) {
         item = item.toLowerCase();
