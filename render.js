@@ -1,6 +1,5 @@
 const width = innerWidth;
 const height = innerHeight;
-var mousePos = [0, 0];
 
 function $(x) {
     return document.getElementById(x);
@@ -12,7 +11,16 @@ const ctx = canvas.getContext("2d");
 canvas.width = width;
 canvas.height = height;
 
-const lerpT = 0.1;
+// set all ye constants here!!
+
+var mousePos = [0, 0];
+var t = 0;
+var mouseOrbitPos = [0, 0];
+const lerpT = 0.05;
+const mouseOrbitRadius = 200;
+const mouseOrbitOmega = 1;
+const tailLength = 20;
+
 
 document.onmousemove = setMouse;
 
@@ -37,6 +45,7 @@ class tailComponent {
 
 class tail {
     constructor(pos, length, distBetween, size, taper) {
+        this.phase = Math.random() * 2 * Math.PI;
         this.taper = taper;
         this.length = length;
         this.distBetween = distBetween;
@@ -47,7 +56,10 @@ class tail {
     }
 
     move(target, minDist) {
-        this.components[0].moveTowards(target, minDist);
+        let targetOrbit = [0, 0]
+        targetOrbit[0] = target[0] + mouseOrbitRadius * Math.cos(mouseOrbitOmega * t + this.phase);
+        targetOrbit[1] = target[1] + mouseOrbitRadius * Math.sin(mouseOrbitOmega * t + this.phase);
+        this.components[0].moveTowards(targetOrbit, minDist);
         for (let i = 1; i < this.length; i++) {
             this.components[i].moveTowards(this.components[i - 1].pos, this.distBetween);
         }
@@ -55,9 +67,12 @@ class tail {
 }
 
 
-function update() {
+function update(timestamp) {
+
+    t = timestamp / 1000;
+
     window.requestAnimationFrame(update);
-    circles.move(mousePos, 100);
+    circles.move(mousePos, 5);
     draw();
 }
 
@@ -67,13 +82,24 @@ function draw() {
     ctx.clearRect(0, 0, width, height);
     //console.log(circles.length);
 
+    //ctx.beginPath();
+    //ctx.arc(mouseOrbitPos[0], mouseOrbitPos[1], 10, 0, 2 * Math.PI);
+    //ctx.stroke();
+
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round;'
+    ctx.beginPath();
+
     for (let i = 0; i < circles.length; i++) {
-        //console.log("lol");
-        ctx.beginPath();
-        ctx.arc(circles.components[i].pos[0], circles.components[i].pos[1], circles.components[i].size, 40, 0, 2 * Math.PI);
+        ctx.lineWidth = circles.components[i].size;
+        //ctx.quadraticCurveTo(circles.components[i + 1].pos[0], circles.components[i + 1].pos[1], circles.components[i].pos[0], circles.components[i].pos[1]);
+        //ctx.arc(circles.components[i].pos[0], circles.components[i].pos[1], circles.components[i].size, 40, 0, 2 * Math.PI);
+        ctx.lineTo(circles.components[i].pos[0], circles.components[i].pos[1]);
         ctx.stroke();
     } 
 
+    //ctx.closePath();
 }
 
 function setMouse(ev) {
@@ -95,7 +121,7 @@ function getDist(x1, x2) {
     return dist;
 }
 
-    var circles = new tail([0,0], 20, 20, 40, 0.9);
+    var circles = new tail([0,0], 80, 4, 40, 0.9);
 
     window.requestAnimationFrame(update);
 
