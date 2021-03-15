@@ -76,7 +76,7 @@ function update(timestamp) {
     t = timestamp / 1000;
 
     window.requestAnimationFrame(update);
-    for (let i = 1; i < tails.length; i++) {
+    for (let i = 0; i < tails.length; i++) {
         tails   [i].move(mousePos, 5);
     }
     draw();
