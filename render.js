@@ -16,15 +16,15 @@ canvas.height = height;
 var mousePos = [0, 0];
 var t = 0;
 var mouseOrbitPos = [0, 0];
-const mouseOrbitRadius = 200;
-const mouseOrbitOmega = 1;
+const mouseOrbitRadius = 100;
+const mouseOrbitOmega = 0.1;
 const tailLength = 50;
 const tailDistBetween = 4;
 const tailLerp = 0.05;
 const componentLerp = 0.2;
 const tailSize = 40;
-const tailTaper = 0.9;
-
+const tailTaper = 0.95;
+const numberOfTails = 10;
 
 document.onmousemove = setMouse;
 
@@ -61,8 +61,8 @@ class tail {
 
     move(target, minDist) {
         let targetOrbit = [0, 0]
-        targetOrbit[0] = target[0] + mouseOrbitRadius * Math.cos(mouseOrbitOmega * t + this.phase);
-        targetOrbit[1] = target[1] + mouseOrbitRadius * Math.sin(mouseOrbitOmega * t + this.phase);
+        targetOrbit[0] = target[0] + this.phase * mouseOrbitRadius * Math.cos((mouseOrbitOmega + this.phase) * t + this.phase);
+        targetOrbit[1] = target[1] + this.phase * mouseOrbitRadius * Math.sin((mouseOrbitOmega + this.phase) * t + this.phase);
         this.components[0].moveTowards(targetOrbit, minDist, tailLerp);
         for (let i = 1; i < this.length; i++) {
             this.components[i].moveTowards(this.components[i - 1].pos, this.distBetween, componentLerp);
@@ -76,7 +76,9 @@ function update(timestamp) {
     t = timestamp / 1000;
 
     window.requestAnimationFrame(update);
-    circles.move(mousePos, 5);
+    for (let i = 1; i < tails.length; i++) {
+        tails   [i].move(mousePos, 5);
+    }
     draw();
 }
 
@@ -93,15 +95,18 @@ function draw() {
 
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round;'
-    ctx.beginPath();
 
-    for (let i = 0; i < circles.length; i++) {
-        ctx.lineWidth = circles.components[i].size;
-        //ctx.quadraticCurveTo(circles.components[i + 1].pos[0], circles.components[i + 1].pos[1], circles.components[i].pos[0], circles.components[i].pos[1]);
-        //ctx.arc(circles.components[i].pos[0], circles.components[i].pos[1], circles.components[i].size, 40, 0, 2 * Math.PI);
-        ctx.lineTo(circles.components[i].pos[0], circles.components[i].pos[1]);
-        ctx.stroke();
-    } 
+    for (let j = 0; j < tails.length; j++) {
+        ctx.beginPath();
+        for (let i = 0; i < tails[j].length; i++) {
+            ctx.lineWidth = tails[j].components[i].size;
+            //ctx.quadraticCurveTo(circles.components[i + 1].pos[0], circles.components[i + 1].pos[1], circles.components[i].pos[0], circles.components[i].pos[1]);
+            //ctx.arc(circles.components[i].pos[0], circles.components[i].pos[1], circles.components[i].size, 40, 0, 2 * Math.PI);
+            ctx.lineTo(tails[j].components[i].pos[0], tails[j].components[i].pos[1]);
+            ctx.stroke();
+        } 
+    }
+
 
     //ctx.closePath();
 }
@@ -125,7 +130,11 @@ function getDist(x1, x2) {
     return dist;
 }
 
-    var circles = new tail([0,0], 80, 4, 40, 0.9);
+    var tails = []
+    for (i = 0; i < numberOfTails; i++) {
+        tails[i] = new tail([width / 2, height / 2], tailLength, tailDistBetween, tailSize, tailTaper);
+    }
+
 
     window.requestAnimationFrame(update);
 
