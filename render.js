@@ -16,7 +16,7 @@ canvas.height = height;
 var mousePos = [0, 0];
 var t = 0;
 var mouseOrbitPos = [0, 0];
-const mouseOrbitRadius = 100;
+const mouseOrbitRadius = 80;
 const mouseOrbitOmega = 0.1;
 const tailLength = 50;
 const tailDistBetween = 4;
@@ -24,7 +24,7 @@ const tailLerp = 0.05;
 const componentLerp = 0.2;
 const tailSize = 40;
 const tailTaper = 0.95;
-const numberOfTails = 10;
+const numberOfTails = 9;
 
 document.onmousemove = setMouse;
 
@@ -61,8 +61,8 @@ class tail {
 
     move(target, minDist) {
         let targetOrbit = [0, 0]
-        targetOrbit[0] = target[0] + this.phase * mouseOrbitRadius * Math.cos((mouseOrbitOmega + this.phase) * t + this.phase);
-        targetOrbit[1] = target[1] + this.phase * mouseOrbitRadius * Math.sin((mouseOrbitOmega + this.phase) * t + this.phase);
+        targetOrbit[0] = target[0] + (2 + this.phase) * mouseOrbitRadius * Math.cos((mouseOrbitOmega + this.phase) * t + this.phase);
+        targetOrbit[1] = target[1] + (2 + this.phase) * mouseOrbitRadius * Math.sin((mouseOrbitOmega + this.phase) * t + this.phase);
         this.components[0].moveTowards(targetOrbit, minDist, tailLerp);
         for (let i = 1; i < this.length; i++) {
             this.components[i].moveTowards(this.components[i - 1].pos, this.distBetween, componentLerp);
@@ -94,7 +94,8 @@ function draw() {
 
 
     ctx.lineCap = 'round';
-    ctx.lineJoin = 'round;'
+    ctx.lineJoin = 'round';
+    ctx.miterLimit = 4;
 
     for (let j = 0; j < tails.length; j++) {
         ctx.beginPath();
