@@ -16,10 +16,14 @@ canvas.height = height;
 var mousePos = [0, 0];
 var t = 0;
 var mouseOrbitPos = [0, 0];
-const lerpT = 0.05;
 const mouseOrbitRadius = 200;
 const mouseOrbitOmega = 1;
-const tailLength = 20;
+const tailLength = 50;
+const tailDistBetween = 4;
+const tailLerp = 0.05;
+const componentLerp = 0.2;
+const tailSize = 40;
+const tailTaper = 0.9;
 
 
 document.onmousemove = setMouse;
@@ -30,13 +34,13 @@ class tailComponent {
         this.size = size;
     }
 
-    moveTowards(target, minDist) {
+    moveTowards(target, minDist, lerpValue) {
         //console.log("dist", getDist(this.pos, target));
 
         if (getDist(this.pos, target) > minDist) {
             //console.log("lmao");
-            let newX = lerp(this.pos[0], target[0], lerpT);
-            let newY = lerp(this.pos[1], target[1], lerpT);
+            let newX = lerp(this.pos[0], target[0], lerpValue);
+            let newY = lerp(this.pos[1], target[1], lerpValue);
             //console.log("new", [newX,newY]);
             this.pos = [newX, newY];
         } 
@@ -59,9 +63,9 @@ class tail {
         let targetOrbit = [0, 0]
         targetOrbit[0] = target[0] + mouseOrbitRadius * Math.cos(mouseOrbitOmega * t + this.phase);
         targetOrbit[1] = target[1] + mouseOrbitRadius * Math.sin(mouseOrbitOmega * t + this.phase);
-        this.components[0].moveTowards(targetOrbit, minDist);
+        this.components[0].moveTowards(targetOrbit, minDist, tailLerp);
         for (let i = 1; i < this.length; i++) {
-            this.components[i].moveTowards(this.components[i - 1].pos, this.distBetween);
+            this.components[i].moveTowards(this.components[i - 1].pos, this.distBetween, componentLerp);
         }
     }
 }
