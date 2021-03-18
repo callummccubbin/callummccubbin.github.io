@@ -11,6 +11,11 @@
         margin: 0px 0px;
     }
 
+    .hideOverflow {
+        overflow-x: hidden;
+        overflow-y: hidden;
+    }
+
     .title {
         font-family: 'Montserrat', sans-serif;
         text-align: center;
@@ -40,6 +45,25 @@
         margin: 30px 180px;
         background-color: #aff1ab32;
         padding: 30px 20px;
+    }
+
+    .blueBG {
+        background-color: #1d0fa15b;
+
+    }
+
+    .blue {
+        background-color: #13049931;
+        height: 100%; /* 100% Full-height */
+        width: 100%; /* 0 width - change this with JavaScript */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Stay on top */
+        top: 0; /* Stay at the top */
+        overflow-y: hidden;
+    }
+
+    .myCanvas {
+        overflow: hidden;
     }
 
     .container-side {
@@ -98,12 +122,13 @@
         height: 100%; /* 100% Full-height */
         width: 0; /* 0 width - change this with JavaScript */
         position: fixed; /* Stay in place */
-        z-index: 1; /* Stay on top */
+        margin: 0px;
+        z-index: 2; /* Stay on top */
         top: 0; /* Stay at the top */
         right: 0;
         background-color: #aff1abbb;
-        overflow-x: hidden; /* Disable horizontal scroll */
-        padding-top: 60px; /* Place content 60px from the top */
+        overflow: hidden;
+        padding-top: 30px; /* Place content 60px from the top */
         transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
     }
 
@@ -128,6 +153,7 @@
         right: 25px;
         font-size: 36px;
         margin-left: 50px;
+        text-decoration: none;
     }
 
 

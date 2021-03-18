@@ -22,63 +22,63 @@
         <title>canvas test</title>
     </head>
 
-    <body>
-        <div class="none" onclick="toggleNav()">
-            <canvas id="myCanvas"></canvas>
-        </div>
-
-        <div id="mySidenav" class="sidenav">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-            <div class="sidenavInterior">
-                <label for="a1">Number of Worms to generate</label>
-                <input type="range" min="1" max="30" value="8" class="slider" id="a1">
-                <div class="sliderOutput">
-                    <p id="b1"></p>
-                </div>
-    
-                <label for="a2">Worm head radius</label>
-                <input type="range" min="4" max="80" value="30" class="slider" id="a2">
-                <div class="sliderOutput">
-                    <p id="b2"></p>
-                </div>
-
-                <label for="a3">Worm length</label>
-                <input type="range" min="4" max="50" value="30" class="slider" id="a3">
-                <div class="sliderOutput">
-                    <p id="b3"></p>
-                </div>
-
-                <label for="a4">Worm Speed</label>
-                <input type="range" min="1" max="20" value="5" class="slider" id="a4">
-                <div class="sliderOutput">
-                    <p id="b4"></p>
-                </div>
-
-                <label for="a5">Worm Taper</label>
-                <input type="range" min="40" max="100" value="80" class="slider" id="a5">
-                <div class="sliderOutput">
-                    <p id="b5"></p>
-                </div>
-
-                <label for="a6">Worm Orbit Radius</label>
-                <input type="range" min="0" max="200" value="80" class="slider" id="a6">
-                <div class="sliderOutput">
-                    <p id="b6"></p>
-                </div>
-
-                <label for="a7">Worm Orbit Speed</label>
-                <input type="range" min="1" max="25" value="5" class="slider" id="a7">
-                <div class="sliderOutput">
-                    <p id="b7"></p>
-                </div>
-
-                <button type="button" onclick="initialize()">Apply Changes</button>
-
+    <body class="hideOverflow">
+        <div class="blueBG">
+                <canvas id="myCanvas"></canvas>
             </div>
 
-          </div>
-          <script src="render.js"></script>
+            <div class="blue" onclick="toggleNav()"></div>
 
+            <div id="mySidenav" class="sidenav">
+                <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                <div class="sidenavInterior">
+                    <label for="a1">Number of Worms to generate</label>
+                    <input type="range" min="1" max="30" value="8" class="slider" id="a1">
+                    <div class="sliderOutput">
+                        <p id="b1"></p>
+                    </div>
+        
+                    <label for="a2">Worm head radius</label>
+                    <input type="range" min="4" max="80" value="30" class="slider" id="a2">
+                    <div class="sliderOutput">
+                        <p id="b2"></p>
+                    </div>
+
+                    <label for="a3">Worm length</label>
+                    <input type="range" min="4" max="50" value="30" class="slider" id="a3">
+                    <div class="sliderOutput">
+                        <p id="b3"></p>
+                    </div>
+
+                    <label for="a4">Worm Speed</label>
+                    <input type="range" min="1" max="20" value="5" class="slider" id="a4">
+                    <div class="sliderOutput">
+                        <p id="b4"></p>
+                    </div>
+
+                    <label for="a5">Worm Taper</label>
+                    <input type="range" min="60" max="100" value="90" class="slider" id="a5">
+                    <div class="sliderOutput">
+                        <p id="b5"></p>
+                    </div>
+
+                    <label for="a6">Worm Orbit Radius</label>
+                    <input type="range" min="0" max="200" value="80" class="slider" id="a6">
+                    <div class="sliderOutput">
+                        <p id="b6"></p>
+                    </div>
+
+                    <label for="a7">Worm Orbit Speed</label>
+                    <input type="range" min="1" max="25" value="5" class="slider" id="a7">
+                    <div class="sliderOutput">
+                        <p id="b7"></p>
+                    </div>
+
+                    <button type="button" onclick="initialize()">Apply Changes</button>
+
+                </div>
+            </div>
+            <script src="render.js"></script>
     </body>
 
     

@@ -161,7 +161,7 @@ function draw() {
         ctx.beginPath();
         for (let i = 0; i < tails[j].length; i++) {
             ctx.lineWidth = tails[j].components[i].size;
-            ctx.strokeStyle = 'rgb(' + i + ', ' + i + ', ' + i + ')';
+            //ctx.strokeStyle = 'rgb(' + i + ', ' + i + ', ' + i + ')';
             //ctx.quadraticCurveTo(circles.components[i + 1].pos[0], circles.components[i + 1].pos[1], circles.components[i].pos[0], circles.components[i].pos[1]);
             //ctx.arc(circles.components[i].pos[0], circles.components[i].pos[1], circles.components[i].size, 40, 0, 2 * Math.PI);
             ctx.lineTo(tails[j].components[i].pos[0], tails[j].components[i].pos[1]);
