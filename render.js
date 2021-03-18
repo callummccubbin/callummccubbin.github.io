@@ -32,8 +32,8 @@ for (let k = 0; k < 6; k++) {
 let numberOfTails = inputs[0].value;
 let tailSize = inputs[1].value;
 let tailLength = inputs[2].value;
-let tailLerp = inputs[3].value; // tail speed
-let tailTaper = inputs[4].value;
+let tailLerp = inputs[3].value / 100; // tail speed
+let tailTaper = inputs[4].value / 100;
 let mouseOrbitRadius = inputs[5].value;
 
 const mouseOrbitOmega = 0.1;
@@ -101,8 +101,8 @@ function initialize() {
     numberOfTails = inputs[0].value;
     tailSize = inputs[1].value;
     tailLength = inputs[2].value;
-    tailLerp = inputs[3].value; // tail speed
-    tailTaper = inputs[4].value;
+    tailLerp = inputs[3].value / 100; // tail speed
+    tailTaper = inputs[4].value / 100;
     mouseOrbitRadius = inputs[5].value;
 
     for (i = 0; i < numberOfTails; i++) {
@@ -122,7 +122,7 @@ function update(timestamp) {
 
     window.requestAnimationFrame(update);
     for (let i = 0; i < tails.length; i++) {
-        tails   [i].move(mousePos, 5);
+        tails[i].move(mousePos, 5);
     }
     draw();
 }
@@ -151,7 +151,8 @@ function draw() {
             //ctx.arc(circles.components[i].pos[0], circles.components[i].pos[1], circles.components[i].size, 40, 0, 2 * Math.PI);
             ctx.lineTo(tails[j].components[i].pos[0], tails[j].components[i].pos[1]);
             ctx.stroke();
-        } 
+        }
+        
     }
 
 
