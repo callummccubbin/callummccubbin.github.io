@@ -11,22 +11,48 @@ const ctx = canvas.getContext("2d");
 canvas.width = width;
 canvas.height = height;
 
-// set all ye constants here!!
+let inputs = [];
+let outputs = [];
 
 var mousePos = [0, 0];
 var t = 0;
-var mouseOrbitPos = [0, 0];
-const mouseOrbitRadius = 80;
-const mouseOrbitOmega = 0.1;
-const tailLength = 50;
-const tailDistBetween = 4;
-const tailLerp = 0.05;
-const componentLerp = 0.2;
-const tailSize = 40;
-const tailTaper = 0.95;
-const numberOfTails = 9;
+var tails = [];
 
-document.onmousemove = setMouse;
+for (let k = 0; k < 6; k++) {
+    inputs[k] = $("a" + String(k + 1));
+    outputs[k] = $("b" + String(k + 1));
+}
+
+for (let k = 0; k < 6; k++) {
+    inputs[k].oninput = function() {
+        outputs[k].innerHTML = this.value;
+    }
+}
+
+let numberOfTails = inputs[0].value;
+let tailSize = inputs[1].value;
+let tailLength = inputs[2].value;
+let tailLerp = inputs[3].value; // tail speed
+let tailTaper = inputs[4].value;
+let mouseOrbitRadius = inputs[5].value;
+
+const mouseOrbitOmega = 0.1;
+const tailDistBetween = 2;
+const componentLerp = 0.2;
+
+console.log(tails);
+
+function toggleNav() {
+    if (document.getElementById("mySidenav").style.width == "300px") {
+        document.getElementById("mySidenav").style.width = "0";
+    } else {
+        document.getElementById("mySidenav").style.width = "300px";
+    }
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+} 
 
 class tailComponent {
     constructor(pos, size) {
@@ -61,8 +87,8 @@ class tail {
 
     move(target, minDist) {
         let targetOrbit = [0, 0]
-        targetOrbit[0] = target[0] + (2 + this.phase) * mouseOrbitRadius * Math.cos((mouseOrbitOmega + this.phase) * t + this.phase);
-        targetOrbit[1] = target[1] + (2 + this.phase) * mouseOrbitRadius * Math.sin((mouseOrbitOmega + this.phase) * t + this.phase);
+        targetOrbit[0] = target[0] + (1 + this.phase) * mouseOrbitRadius * Math.cos((mouseOrbitOmega + this.phase) * t + this.phase);
+        targetOrbit[1] = target[1] + (1 + this.phase) * mouseOrbitRadius * Math.sin((mouseOrbitOmega + this.phase) * t + this.phase);
         this.components[0].moveTowards(targetOrbit, minDist, tailLerp);
         for (let i = 1; i < this.length; i++) {
             this.components[i].moveTowards(this.components[i - 1].pos, this.distBetween, componentLerp);
@@ -70,6 +96,25 @@ class tail {
     }
 }
 
+function initialize() {
+
+    numberOfTails = inputs[0].value;
+    tailSize = inputs[1].value;
+    tailLength = inputs[2].value;
+    tailLerp = inputs[3].value; // tail speed
+    tailTaper = inputs[4].value;
+    mouseOrbitRadius = inputs[5].value;
+
+    for (i = 0; i < numberOfTails; i++) {
+        tails[i] = new tail([width * Math.random(), height * Math.random()], tailLength, tailDistBetween, tailSize, tailTaper);
+    }
+
+}
+
+
+document.onmousemove = setMouse;
+
+initialize();
 
 function update(timestamp) {
 
@@ -113,9 +158,13 @@ function draw() {
     //ctx.closePath();
 }
 
+
+
 function setMouse(ev) {
-    mousePos[0] = ev.clientX;
-    mousePos[1] = ev.clientY;
+    if (mousePos != null) {
+        mousePos[0] = ev.clientX;
+        mousePos[1] = ev.clientY;
+    }
 }
 
 function lerp(x, y, t) {
@@ -131,12 +180,5 @@ function getDist(x1, x2) {
     let dist = Math.sqrt((dx ** 2) + (dy ** 2));
     return dist;
 }
-
-    var tails = []
-    for (i = 0; i < numberOfTails; i++) {
-        tails[i] = new tail([width / 2, height / 2], tailLength, tailDistBetween, tailSize, tailTaper);
-    }
-
-
-    window.requestAnimationFrame(update);
+window.requestAnimationFrame(update);
 
