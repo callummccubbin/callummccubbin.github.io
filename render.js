@@ -89,8 +89,8 @@ class tail {
 
     move(target, minDist) {
         let targetOrbit = [0, 0];
-        targetOrbit[0] = target[0] + (1 + this.rand) * mouseOrbitRadius * Math.cos((mouseOrbitOmega * (this.rand2 - 0.5)) * t + this.phase);
-        targetOrbit[1] = target[1] + (1 + this.rand) * mouseOrbitRadius * Math.sin((mouseOrbitOmega * (this.rand2 - 0.5)) * t + this.phase);
+        targetOrbit[0] = target[0] + (0.5 + this.rand) * mouseOrbitRadius * Math.cos((mouseOrbitOmega * (this.rand2 - 0.5)) * t + this.phase);
+        targetOrbit[1] = target[1] + (0.5 + this.rand) * mouseOrbitRadius * Math.sin((mouseOrbitOmega * (this.rand2 - 0.5)) * t + this.phase);
         this.components[0].moveTowards(targetOrbit, minDist, tailLerp);
         //this.components[0].pos = targetOrbit;
         for (let i = 1; i < this.length; i++) {
@@ -149,7 +149,7 @@ function draw() {
     //ctx.beginPath();
     //ctx.arc(mouseOrbitPos[0], mouseOrbitPos[1], 10, 0, 2 * Math.PI);
     //ctx.stroke();
-    drawDot();
+    //drawDot();
 
 
     ctx.lineCap = 'round';
