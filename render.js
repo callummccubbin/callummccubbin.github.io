@@ -18,12 +18,12 @@ var mousePos = [0, 0];
 var t = 0;
 var tails = [];
 
-for (let k = 0; k < 6; k++) {
+for (let k = 0; k < 7; k++) {
     inputs[k] = $("a" + String(k + 1));
     outputs[k] = $("b" + String(k + 1));
 }
 
-for (let k = 0; k < 6; k++) {
+for (let k = 0; k < 7; k++) {
     inputs[k].oninput = function() {
         outputs[k].innerHTML = this.value;
     }
@@ -35,8 +35,8 @@ let tailLength = inputs[2].value;
 let tailLerp = inputs[3].value / 100; // tail speed
 let tailTaper = inputs[4].value / 100;
 let mouseOrbitRadius = inputs[5].value;
+let mouseOrbitOmega = inputs[6].value;
 
-const mouseOrbitOmega = 0.1;
 const tailDistBetween = 2;
 const componentLerp = 0.2;
 
@@ -76,6 +76,8 @@ class tailComponent {
 class tail {
     constructor(pos, length, distBetween, size, taper) {
         this.phase = Math.random() * 2 * Math.PI;
+        this.rand = Math.random();
+        this.rand2 = Math.random();
         this.taper = taper;
         this.length = length;
         this.distBetween = distBetween;
@@ -86,10 +88,11 @@ class tail {
     }
 
     move(target, minDist) {
-        let targetOrbit = [0, 0]
-        targetOrbit[0] = target[0] + (1 + this.phase) * mouseOrbitRadius * Math.cos((mouseOrbitOmega + this.phase) * t + this.phase);
-        targetOrbit[1] = target[1] + (1 + this.phase) * mouseOrbitRadius * Math.sin((mouseOrbitOmega + this.phase) * t + this.phase);
+        let targetOrbit = [0, 0];
+        targetOrbit[0] = target[0] + (1 + this.rand) * mouseOrbitRadius * Math.cos((mouseOrbitOmega * (this.rand2 - 0.5)) * t + this.phase);
+        targetOrbit[1] = target[1] + (1 + this.rand) * mouseOrbitRadius * Math.sin((mouseOrbitOmega * (this.rand2 - 0.5)) * t + this.phase);
         this.components[0].moveTowards(targetOrbit, minDist, tailLerp);
+        //this.components[0].pos = targetOrbit;
         for (let i = 1; i < this.length; i++) {
             this.components[i].moveTowards(this.components[i - 1].pos, this.distBetween, componentLerp);
         }
@@ -104,6 +107,7 @@ function initialize() {
     tailLerp = inputs[3].value / 100; // tail speed
     tailTaper = inputs[4].value / 100;
     mouseOrbitRadius = inputs[5].value;
+    mouseOrbitOmega = inputs[6].value;
 
     for (i = 0; i < numberOfTails; i++) {
         tails[i] = new tail([width * Math.random(), height * Math.random()], tailLength, tailDistBetween, tailSize, tailTaper);
@@ -119,15 +123,24 @@ initialize();
 function update(timestamp) {
 
     t = timestamp / 1000;
-
-    window.requestAnimationFrame(update);
     for (let i = 0; i < tails.length; i++) {
         tails[i].move(mousePos, 5);
     }
     draw();
+
+    window.requestAnimationFrame(update);
+}
+
+function drawDot() {
+    let targetOrbit = [0, 0];
+    targetOrbit[0] = mousePos[0] + mouseOrbitRadius * Math.cos((mouseOrbitOmega) * t);
+    targetOrbit[1] = mousePos[1] + mouseOrbitRadius * Math.sin((mouseOrbitOmega) * t);
+
+    ctx.fillRect(targetOrbit[0], targetOrbit[1], 10, 10);
 }
 
 function draw() {
+
     //console.log(mousePos[0], ",", mousePos[1]);
 
     ctx.clearRect(0, 0, width, height);
@@ -136,6 +149,7 @@ function draw() {
     //ctx.beginPath();
     //ctx.arc(mouseOrbitPos[0], mouseOrbitPos[1], 10, 0, 2 * Math.PI);
     //ctx.stroke();
+    drawDot();
 
 
     ctx.lineCap = 'round';
@@ -162,10 +176,8 @@ function draw() {
 
 
 function setMouse(ev) {
-    if (mousePos != null) {
         mousePos[0] = ev.clientX;
         mousePos[1] = ev.clientY;
-    }
 }
 
 function lerp(x, y, t) {
