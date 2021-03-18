@@ -109,6 +109,7 @@ function initialize() {
     mouseOrbitRadius = inputs[5].value;
     mouseOrbitOmega = inputs[6].value;
 
+    tails = [];
     for (i = 0; i < numberOfTails; i++) {
         tails[i] = new tail([width * Math.random(), height * Math.random()], tailLength, tailDistBetween, tailSize, tailTaper);
     }
