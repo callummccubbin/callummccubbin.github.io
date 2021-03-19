@@ -27,6 +27,7 @@
 
     p {
         font-family: 'Lato', sans-serif;
+        font-size: 18px;
     }
 
     label {
@@ -47,9 +48,15 @@
         padding: 30px 20px;
     }
 
+    .container1 {
+        display: block;
+        margin: 30px 180px;
+        background-color: #aff1ab32;
+        padding: 30px 20px;
+    }
+
     .blueBG {
         background-color: #1d0fa15b;
-
     }
 
     .blue {
@@ -70,6 +77,39 @@
         width: 50%;
         padding: 14px 16px;
         float: right;
+    }
+
+    .PSUpper {
+        display: flex;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 20px;
+    }
+
+    .PSLower {
+        padding: 10px;
+    }
+
+    .projectSection {
+        overflow: auto;
+    }
+
+    .PSTitle {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-size: 30px;
+        text-decoration: solid;
+        text-decoration-color: #1c6b67 ;
+    }
+
+    .inlineImage {
+        float: right;
+        height: 250px;
+        margin-left: 20px;
+    }
+
+    .logo {
+        height: 50px;
+        margin-left: 20px;
     }
 
     .sliderOutput {
