@@ -11,6 +11,10 @@
         margin: 0px 0px;
     }
 
+    ::selection {
+        background: #aef1ab;
+    }
+
     .hideOverflow {
         overflow-x: hidden;
         overflow-y: hidden;

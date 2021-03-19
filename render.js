@@ -24,6 +24,10 @@ for (let k = 0; k < 7; k++) {
 }
 
 for (let k = 0; k < 7; k++) {
+    outputs[k].innerHTML = inputs[k].value;
+}
+
+for (let k = 0; k < 7; k++) {
     inputs[k].oninput = function() {
         outputs[k].innerHTML = this.value;
     }
