@@ -59,6 +59,9 @@
         background-color: #1d0fa15b;
     }
 
+    p a {
+        text-decoration: solid;
+    }
     .blue {
         background-color: #13049931;
         height: 100%; /* 100% Full-height */
