@@ -128,7 +128,7 @@ function generateNames(index) {
         for (i = 0; i < count; i++) {
             let name = getName(index, max);
             //console.log(name.length, "name length");
-            if(name.length < min) {
+            if(name.length <= min) {
                 i--;
                 tries++;
                 if(tries > 1000) {
