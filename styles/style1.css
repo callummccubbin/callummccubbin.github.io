@@ -17,7 +17,7 @@
         #f5f3f6 light 
         #76b3b9 light accent
         #7F9BAF main
-        #7d8267 dark accent
+        #596ABA dark accent
         #272f3f dark
     */
 
@@ -67,7 +67,7 @@
     .intro {
         margin: 10px 150px;
         /* light */
-        background-color: #f5f3f6aa;
+        background-color: #f5f3f680;
         padding: 10px 20px;
     }
 
@@ -75,7 +75,7 @@
         display: flex;
         margin: 30px 180px;
         /* light */
-        background-color: #f5f3f6aa;
+        background-color: #f5f3f680;
         padding: 30px 20px;
     }
 
@@ -83,7 +83,7 @@
         display: block;
         margin: 30px 180px;
         /* light */
-        background-color: #f5f3f6aa;
+        background-color: #f5f3f680;
         padding: 30px 20px;
     }
 
@@ -96,12 +96,16 @@
         text-decoration: solid;
     }
 
-    .PSUpper a {
-
+    a:link {
+        color: #596ABA;;
     }
 
-    .PSLower a {
+    a:visited {
+        color: #596ABA;
+    }
 
+    a:hover {
+        color: #3a4c9c;
     }
 
     .blue {
@@ -277,9 +281,9 @@
     button[type=button] {
         width: 75%;
         /* dark accent */
-        background-color: #7d8267;
+        background-color: #596ABA;
         /* light */
-        color: #c9f8c6;
+        color: #f5f3f6;
         padding: 14px 20px;
         margin: 8px 0;
         border: none;
