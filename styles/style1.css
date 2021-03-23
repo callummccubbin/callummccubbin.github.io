@@ -1,23 +1,48 @@
     html {
-        background-image: #60DA7F;
-        background-image: -moz-linear-gradient(top, #60DA7F 0%, #47AE69 50%, #248883 100%);
-        background-image: -webkit-linear-gradient(top, #60DA7F 0%, #47AE69 50%, #248883 100%);
-        background-image: linear-gradient(to bottom, #60DA7F 0%, #47AE69 50%, #248883 100%);
-        background-size: cover;
+        background: #76B3B9;
+        background: -moz-linear-gradient(top, #76B3B9 0%, #7F9BAF 100%);
+        background: -webkit-linear-gradient(top, #76B3B9 0%, #7F9BAF 100%);
+        background: linear-gradient(to bottom, #76B3B9 0%, #7F9BAF 100%);
     }
 
+    /* 
+        Old color scheme, from lightest to darkest 1:5
+        #aef1ab light
+        #60DA7F light accent
+        #47AE69 main
+        #248883 dark accent
+        #0F2A3B dark 
+
+        new color scheme 1
+        #f5f3f6 light 
+        #76b3b9 light accent
+        #7F9BAF main
+        #7d8267 dark accent
+        #272f3f dark
+    */
+
+
+
     body {
-        color: #0F2A3B;
+        /* dark */
+        color: #272f3f;
         margin: 0px 0px;
     }
 
     ::selection {
-        background: #aef1ab;
+        /* light */
+        background: #f5f3f6;
     }
 
     .hideOverflow {
         overflow-x: hidden;
         overflow-y: hidden;
+        /* do not change  */
+        background-image: #60DA7F;
+        background-image: -moz-linear-gradient(top, #60DA7F 0%, #47AE69 50%, #248883 100%);
+        background-image: -webkit-linear-gradient(top, #60DA7F 0%, #47AE69 50%, #248883 100%);
+        background-image: linear-gradient(to bottom, #60DA7F 0%, #47AE69 50%, #248883 100%);
+        background-size: cover;
     }
 
     .title {
@@ -41,31 +66,44 @@
 
     .intro {
         margin: 10px 150px;
-        background-color: #aff1ab32;
+        /* light */
+        background-color: #f5f3f6aa;
         padding: 10px 20px;
     }
 
     .container {
         display: flex;
         margin: 30px 180px;
-        background-color: #aff1ab32;
+        /* light */
+        background-color: #f5f3f6aa;
         padding: 30px 20px;
     }
 
     .container1 {
         display: block;
         margin: 30px 180px;
-        background-color: #aff1ab32;
+        /* light */
+        background-color: #f5f3f6aa;
         padding: 30px 20px;
     }
 
     .blueBG {
+        /* do not change */
         background-color: #1d0fa15b;
     }
 
     p a {
         text-decoration: solid;
     }
+
+    .PSUpper a {
+
+    }
+
+    .PSLower a {
+
+    }
+
     .blue {
         background-color: #13049931;
         height: 100%; /* 100% Full-height */
@@ -124,7 +162,8 @@
     }
 
     .output {
-        background-color: #aff1ab32;
+        /* light */
+        background-color: #f5f3f6bb;
         padding: 14px 16px;
         margin-top: 5%;
     }
@@ -138,14 +177,15 @@
     }
 
     .topnav {
-        background-color: #0F2A3B;
+        /* dark */
+        background-color: #272f3f;
         overflow: hidden;
     }
       
     /* Style the links inside the navigation bar */
     .topnav a {
     float: left;
-    color: #aef1ab;
+    color: #f5f3f6;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
@@ -156,13 +196,16 @@
     /* Change the color of links on hover */
     .topnav a:hover {
     background-color: #ddd;
-    color: black;
+    /* dark */
+    color: 272f3f;
     }
     
     /* Add a color to the active/current link */
     .topnav a.active {
-    background-color: #47ae69;
-    color: white;
+    /* light accent*/
+    background-color: #76b3b9;
+    /* light */
+    color: f5f3f6;
     }
 
     .sidenav {
@@ -173,7 +216,9 @@
         z-index: 2; /* Stay on top */
         top: 0; /* Stay at the top */
         right: 0;
-        background-color: #aff1abbb;
+        /* light */
+        /* transparent */
+        background-color: #f5f3f6bb;
         overflow: hidden;
         padding-top: 30px; /* Place content 60px from the top */
         transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
@@ -206,7 +251,8 @@
     }
 
     .sidenav a:hover {
-        color: #f1f1f1;
+        /* light */
+        color: #f5f3f6;
     }
 
     .sidenav .closebtn {
@@ -230,7 +276,9 @@
 
     button[type=button] {
         width: 75%;
-        background-color: #248883;
+        /* dark accent */
+        background-color: #7d8267;
+        /* light */
         color: #c9f8c6;
         padding: 14px 20px;
         margin: 8px 0;
@@ -242,5 +290,6 @@
     }
 
     button[type=button]:hover {
-        background-color: #1c6b67;
+        /* dark */
+        background-color: #272f3f;
       }
