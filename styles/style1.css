@@ -30,7 +30,7 @@
     }
 
     ::selection {
-        /* light */
+        /* pick one */
         background: #f5f3f6;
     }
 
@@ -167,7 +167,7 @@
 
     .output {
         /* light */
-        background-color: #f5f3f6bb;
+        background-color: #f5f3f690;
         padding: 14px 16px;
         margin-top: 5%;
     }
