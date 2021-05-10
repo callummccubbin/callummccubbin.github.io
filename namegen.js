@@ -279,7 +279,7 @@ let dataParticles = [
     "exciton",
     "plasmon",
     "polaron",
-    "magnon",
+    "magnon"
 
 ]
 
