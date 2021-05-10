@@ -253,6 +253,36 @@ let dataStates = [
     "Wyoming"
 ]
 
+let dataParticles = [
+    "fermion",
+    "boson",
+    "lepton",
+    "quark",
+    "gluon",
+    "muon",
+    "neutrino",
+    "electron",
+    "tau",
+    "tensor",
+    "preon",
+    "hadron",
+    "baryon",
+    "meson",
+    "photon",
+    "graviton",
+    "axion",
+    "curvaton",
+    "pion",
+    "skyrmion",
+    "positron",
+    "phonon",
+    "exciton",
+    "plasmon",
+    "polaron",
+    "magnon",
+
+]
+
 
 countSlider.oninput = function() {
     countSliderOutput.innerHTML = this.value;
