@@ -280,7 +280,45 @@ let dataParticles = [
     "plasmon",
     "polaron",
     "magnon"
+]
 
+let dataHollowKnight = [
+    "Salubra",
+    "Jiji",
+    "Iselda",
+    "Millibelle",
+    "Lemm",
+    "Sly",
+    "Jinn",
+    "Stag",
+    "Tuk",
+    "Oro",
+    "Mato",
+    "Sheo",
+    "Cloth",
+    "Cornifer",
+    "Hornet",
+    "Quirrel",
+    "Tiso",
+    "Zote",
+    "Bretta",
+    "Brumm",
+    "Monomon",
+    "Lurien",
+    "Herrah",
+    "Ze'mer",
+    "Grimm",
+    "Bardoon",
+    "Elderbug",
+    "Emilitia",
+    "Myla",
+    "Nymm",
+    "Willoh",
+    "Revek",
+    "Dryya",
+    "Isma",
+    "Hegemol",
+    "Ogrim"
 ]
 
 
