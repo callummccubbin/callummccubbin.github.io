@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        canvas {
+            display: flex;
+            width: auto;
+            height: auto;
+        }
+    </style>
+
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <link href="styles/style1.css" rel = "stylesheet">
+        <title>Hitomezashi Stitches</title>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Montserrat:wght@500&display=swap" rel="stylesheet"> 
+
+    </head>
+
+    <body>
+        <div class="topnav">
+            <a href="index.html">Callum McCubbin</a>
+            <a href="contact.html">Contact</a>
+        </div> 
+    
+        <div class="title">
+            <h1>Hitomezashi Stitches</h1>
+        </div>
+
+        <div class="intro">
+            <p>
+                This name generator takes in an index of names or other words as its input, then uses the frequencies with which 
+                certain letters appear after other letters and generates names based on random numbers.
+                little bit of patience and creativity you can make a variety of interesting and never-before-seen names.
+            </p>
+            <p>
+                Press any of the labeled preset buttons to <b>add</b> that preset to the current index.
+                Note that in order to try them out individually you will need to hit the reset button before pressing the next button.
+                Additionally, you can add your own names into the current index to totally customize the output.
+
+            </p>
+        </div>  
+
+        <div class="container" id="container">
+            <canvas id="myCanvas" width="1000" height="600" style="border:1px solid #000000;"></canvas>
+
+        </div>
+
+        <script src="stitch.js" ></script>
+    </body>
+
+</html>
