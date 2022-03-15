@@ -58,18 +58,20 @@
 
             switch (event.key) {
                 case "ArrowDown":
-                    cubes[0].move(zhat());
+                    cubes[0].attemptMove(zhat());
                 break;
                 case "ArrowUp":
                     //console.log("up");
-                    cubes[0].move(zhat().negate());
+                    cubes[0].attemptMove(zhat().negate());
                 break;
                 case "ArrowLeft":
-                    cubes[0].move(xhat().negate());
+                    cubes[0].attemptMove(xhat().negate());
                 break;
                 case "ArrowRight":
-                    cubes[0].move(xhat());
+                    cubes[0].attemptMove(xhat());
                 break;
+                case " ":
+                    cubes[0].attemptClimb();
                 default:
                 return; // Quit when this doesn't handle the key event.
             }
@@ -230,13 +232,64 @@
                     this.mesh = mesh;
                     this.mesh.receiveShadow = true;
                     this.mesh.castShadow = true;
-                    //console.log(grid[rd(this.gridPosition.x)][rd(this.gridPosition.y)][rd(this.gridPosition.z)]);
-
+                    this.mesh.position.copy(this.gridPosition);
 
                     grid.set(encodePos(this.gridPosition), this.id);
-                    //grid[parseInt(gridPosition.x)][parseInt(gridPosition.y)][parseInt(gridPosition.z)] = id;
+                }
 
-                    this.mesh.position.copy(this.gridPosition);
+                attemptClimb() {
+                    if(this.check(xhat()) >= 0 ||
+                    this.check(xhat().negate()) >= 0 ||
+                    this.check(zhat()) >= 0 ||
+                    this.check(zhat().negate()) >= 0) {
+                        if (this.check(yhat() == -1)) {
+                            this.attemptMove(yhat());
+                        }
+                    }
+                }
+
+                checkFall() {
+                    let safe = this.check(new THREE.Vector3(0,-1,-1)) > -1 ||
+                                this.check(new THREE.Vector3(0,-1,0)) > -1 ||
+                                this.check(new THREE.Vector3(0,-1,1)) > -1 ||
+                                this.check(new THREE.Vector3(1,-1,-1)) > -1 ||
+                                this.check(new THREE.Vector3(1,-1,0)) > -1 ||
+                                this.check(new THREE.Vector3(1,-1,1)) > -1 ||
+                                this.check(new THREE.Vector3(-1,-1,-1)) > -1 ||
+                                this.check(new THREE.Vector3(-1,-1,0)) > -1 ||
+                                this.check(new THREE.Vector3(-1,-1,1)) > -1;
+
+                    if (this.gridPosition.y == 0) {
+                        safe = true;
+                    }
+                    if (!safe) {
+                        // descend unto the earth
+                        this.move(yhat().negate());
+                    }
+                }
+
+                check(direction) {
+                    let newPos = new THREE.Vector3(0, 0, 0);
+                    newPos.copy(this.gridPosition);
+                    newPos.x += direction.x;
+                    newPos.y += direction.y;
+                    newPos.z += direction.z;
+
+                    if (Math.abs(newPos.x) < gridSize &&
+                    Math.abs(newPos.x) < gridSize &&
+                    Math.abs(newPos.z) < gridSize &&
+                    newPos.x >= 0 &&
+                    newPos.y >= 0 &&
+                    newPos.z >= 0) {  
+
+                        if (!grid.has(encodePos(newPos))) {
+                            return -1;
+                        } else {
+                            return grid.get(encodePos(newPos));
+                        }
+                    } else {
+                        return -2;
+                    }
                 }
 
                 move(direction) {
@@ -251,24 +304,17 @@
                     console.log(newPos.x + " newPos.x");
                     console.log(this.gridPosition.x + " gridPosition.x");
 
-                    if (Math.abs(newPos.x) < gridSize) {   
-                        //console.log("x");
-                        if (Math.abs(newPos.x) < gridSize) {
-                            //console.log("y");
-                            if (Math.abs(newPos.z) < gridSize) {
-                                //console.log("z");
-                                if (newPos.x >= 0 && newPos.y >= 0 && newPos.z >= 0) {
-                                    //console.log("swag");
-                                    console.log(newPos.x, newPos.y, newPos.z);
-                                    if (!grid.has(encodePos(newPos))) {
-                                        //console.log("move");
-                                        grid.delete(encodePos(this.gridPosition));
-                                        grid.set(encodePos(newPos), this.id);
-                                        this.gridPosition = newPos;
-                                    }
-                                }
-                            }
-                        } 
+                    grid.delete(encodePos(this.gridPosition));
+                    grid.set(encodePos(newPos), this.id);
+                    this.gridPosition = newPos;
+                    this.checkFall();
+                }
+
+                attemptMove(direction) {
+                    let c = this.check(direction);
+                    console.log(c);
+                    if (c == -1) {
+                        this.move(direction);
                     }
                 }
 
@@ -279,14 +325,15 @@
 
             let cubes = [];
 
-            for (i = 0; i < 8; i++) {
+            for (i = 0; i < 9; i++) {
 
                 // console.log(grid[5][5][5], "555");
                 // console.log(grid[6][5][5], "655");
                 // console.log(grid[5][6][5], "565");
                 // console.log(grid[5][5][6], "556");
 
-                cubes[i] = new cube(i, new THREE.Vector3(i, 0, i), new THREE.Mesh(geometry, material));
+                cubes[i] = new cube(i, new THREE.Vector3(i, i-1, i), new THREE.Mesh(geometry, material));
+                cubes[0].gridPosition.y += 1;
                 scene.add(cubes[i].mesh);
 
                 // console.log(grid[5][5][5], "555");
