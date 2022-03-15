@@ -41,23 +41,55 @@
 
 		</script>
 		<script>
+
+            //             //id = int, position = Vector3, box = BoxGeometry
+            // class cuboid {
+            //     constructor(id, position, box) {
+            //         this.id = id;
+            //         this.position = position;
+            //         this.box = box;
+            //     }
+            // }
+            
+            window.addEventListener("keydown", function (event) {
+            if (event.defaultPrevented) {
+                return; // Do nothing if the event was already processed
+            }
+
+            switch (event.key) {
+                case "ArrowDown":
+                    cubes[0].move(zhat());
+                break;
+                case "ArrowUp":
+                    //console.log("up");
+                    cubes[0].move(zhat().negate());
+                break;
+                case "ArrowLeft":
+                    cubes[0].move(xhat().negate());
+                break;
+                case "ArrowRight":
+                    cubes[0].move(xhat());
+                break;
+                default:
+                return; // Quit when this doesn't handle the key event.
+            }
+
+            // Cancel the default action to avoid it being handled twice
+            event.preventDefault();
+            }, true);
+
             const scene = new THREE.Scene();
 
             const camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 5000 );
-            camera.position.set( 0, 9, 20);
 
             scene.background = new THREE.Color().setHSL( 0.6, 0, 1 );
             scene.fog = new THREE.Fog( scene.background, 1, 5000 );
 
             const renderer = new THREE.WebGLRenderer();
             renderer.setSize( window.innerWidth, window.innerHeight );
+            renderer.shadowMap.enabled = true;
             document.body.appendChild( renderer.domElement );
 
-            const geometry = new THREE.BoxGeometry();
-            const material = new THREE.MeshStandardMaterial( { color: 0xa7c330 } );
-            const cube = new THREE.Mesh( geometry, material );
-            cube.castShadow = true;
-            scene.add( cube );
 
             //LIGHTS
 
@@ -67,8 +99,8 @@
             hemiLight.position.set( 0, 10, 0 );
             scene.add( hemiLight );
 
-            // const hemiLightHelper = new THREE.HemisphereLightHelper( hemiLight, 10 );
-            // scene.add( hemiLightHelper );
+            //const hemiLightHelper = new THREE.HemisphereLightHelper( hemiLight, 10 );
+            //scene.add( hemiLightHelper );
 
             //
 
@@ -78,10 +110,13 @@
             dirLight.position.multiplyScalar( 30 );
             scene.add( dirLight );
 
+            //const cameraHelper = new THREE.CameraHelper(dirLight.shadow.camera);
+            //  scene.add(cameraHelper);
+
             dirLight.castShadow = true;
 
-            dirLight.shadow.mapSize.width = 2048;
-            dirLight.shadow.mapSize.height = 2048;
+            dirLight.shadow.mapSize.width = 4096;
+            dirLight.shadow.mapSize.height = 4096;
 
             const d = 50;
 
@@ -91,10 +126,10 @@
             dirLight.shadow.camera.bottom = - d;
 
             dirLight.shadow.camera.far = 3500;
-            dirLight.shadow.bias = - 0.0001;
+            dirLight.shadow.bias = - 0.000001;
 
-            const dirLightHelper = new THREE.DirectionalLightHelper( dirLight, 10 );
-            scene.add( dirLightHelper );
+            //const dirLightHelper = new THREE.DirectionalLightHelper( dirLight, 10 );
+            //scene.add( dirLightHelper );
 
             // // GROUND
 
@@ -103,7 +138,7 @@
             groundMat.color.setHSL( 0.095, 1, 0.75 );
 
             const ground = new THREE.Mesh( groundGeo, groundMat );
-            ground.position.y = -1;
+            ground.position.y = -0.5;
             ground.rotation.x = - Math.PI / 2;
             ground.receiveShadow = true;
             scene.add( ground );
@@ -133,18 +168,158 @@
             const sky = new THREE.Mesh( skyGeo, skyMat );
             scene.add( sky );
 
-            camera.rotation.x = -.2;
-            let r = 10;
-            let theta = 0;
+            // GRID
+
+            const maxGridCoordinate = 5
+            const gridSize = maxGridCoordinate * 2 + 1;
+
+            let grid = new Map();
+
+            function encodePos(pos) {
+                let gridKey = pos.x + (pos.y * gridSize) + (pos.z * (gridSize ** 2));
+                return gridKey;
+            }
+
+            function decodeGridKey(gridKey) {
+                let x = gridKey % gridSize;
+                let y = ((gridKey - x) % (gridSize ** 2)) / gridSize;
+                let z = (gridKey - x - (y * gridSize)) / (gridSize ** 2);
+                return new THREE.Vector3(x, y, z);
+            }
+
+            // -1 means there's empty space
+            // -2 means there's a dead cube
+            // 0 and greater is a living cube of that id number
+
+            let gridHelper = new THREE.GridHelper(gridSize, gridSize);
+            scene.add(gridHelper);
+            gridHelper.position.x = maxGridCoordinate;
+            gridHelper.position.z = maxGridCoordinate;
+            gridHelper.position.y = -0.4;
+
+            //
+
+            function xhat() {
+                vec = new THREE.Vector3(1, 0, 0);
+                return vec;
+            }
+            function yhat() {
+                vec = new THREE.Vector3(0, 1, 0);
+                return vec;
+            }
+            function zhat() {
+                vec = new THREE.Vector3(0, 0, 1);
+                return vec;
+            }
+            function zero() {
+                vec = new THREE.Vector3(0, 0, 0);
+                return vec;
+            }
+
+            function lerp(x, y, t) {
+                return x + t * (y - x);
+            }
+
+            // -----------------------------------------
+
+            class cube {
+                constructor(id, gridPosition, mesh) {
+                    this.id = id;
+                    this.gridPosition = new THREE.Vector3(0, 0, 0);
+                    this.gridPosition.copy(gridPosition);
+                    this.mesh = mesh;
+                    this.mesh.receiveShadow = true;
+                    this.mesh.castShadow = true;
+                    //console.log(grid[rd(this.gridPosition.x)][rd(this.gridPosition.y)][rd(this.gridPosition.z)]);
+
+
+                    grid.set(encodePos(this.gridPosition), this.id);
+                    //grid[parseInt(gridPosition.x)][parseInt(gridPosition.y)][parseInt(gridPosition.z)] = id;
+
+                    this.mesh.position.copy(this.gridPosition);
+                }
+
+                move(direction) {
+                    let newPos = new THREE.Vector3(0, 0, 0);
+                
+                    newPos.copy(this.gridPosition);
+
+                    newPos.x += direction.x;
+                    newPos.y += direction.y;
+                    newPos.z += direction.z;
+                    
+                    console.log(newPos.x + " newPos.x");
+                    console.log(this.gridPosition.x + " gridPosition.x");
+
+                    if (Math.abs(newPos.x) < gridSize) {   
+                        //console.log("x");
+                        if (Math.abs(newPos.x) < gridSize) {
+                            //console.log("y");
+                            if (Math.abs(newPos.z) < gridSize) {
+                                //console.log("z");
+                                if (newPos.x >= 0 && newPos.y >= 0 && newPos.z >= 0) {
+                                    //console.log("swag");
+                                    console.log(newPos.x, newPos.y, newPos.z);
+                                    if (!grid.has(encodePos(newPos))) {
+                                        //console.log("move");
+                                        grid.delete(encodePos(this.gridPosition));
+                                        grid.set(encodePos(newPos), this.id);
+                                        this.gridPosition = newPos;
+                                    }
+                                }
+                            }
+                        } 
+                    }
+                }
+
+            }
+
+            const geometry = new THREE.BoxGeometry();
+            const material = new THREE.MeshStandardMaterial( { color: 0xa7c330 } );
+
+            let cubes = [];
+
+            for (i = 0; i < 8; i++) {
+
+                // console.log(grid[5][5][5], "555");
+                // console.log(grid[6][5][5], "655");
+                // console.log(grid[5][6][5], "565");
+                // console.log(grid[5][5][6], "556");
+
+                cubes[i] = new cube(i, new THREE.Vector3(i, 0, i), new THREE.Mesh(geometry, material));
+                scene.add(cubes[i].mesh);
+
+                // console.log(grid[5][5][5], "555");
+                // console.log(grid[6][5][5], "655");
+                // console.log(grid[5][6][5], "565");
+                // console.log(grid[5][5][6], "556");
+
+
+                // console.log(grid[cubes[i].gridPosition.x]
+                // [cubes[i].gridPosition.y]
+                // [cubes[i].gridPosition.z]);
+            }
+
+            camera.position.set( 0, 20, 40);
+            camera.rotation.x = -.4;
+            let rCamera = 40;
+            let thetaCamera = 0;
+            let rLight = 40
+            let thetaLight = 0
 			function animate() {
 				requestAnimationFrame( animate );
-                dirLight.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.01);
-                theta += 0.05;
-                dirLight.position.x = r * Math.sin(theta);
-                dirLight.position.z = r * Math.cos(theta);
-    
-                cube.position.z -= 0.04;
-                cube.rotation.y += 0.01;
+                //camera.rotateOnWorldAxis(yhat(), 0.01);
+                //thetaCamera += 0.01;
+                thetaLight -= 0.005;
+                camera.position.x = rCamera * Math.sin(thetaCamera);
+                camera.position.z = rCamera * Math.cos(thetaCamera);
+
+                dirLight.position.x = rLight * Math.sin(thetaLight);
+                dirLight.position.z = rLight * Math.cos(thetaLight);
+
+                //console.log(cubes[0].gridPosition.x);
+                cubes[0].mesh.position.lerp(cubes[0].gridPosition, 0.3);
+
 				renderer.render( scene, camera );
 			};
 			animate();
