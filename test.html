@@ -222,6 +222,10 @@
                 return x + t * (y - x);
             }
 
+            function rnd(x) {
+                return Math.floor(Math.random() * x);
+            }
+
             // -----------------------------------------
 
             class cube {
@@ -233,22 +237,53 @@
                     this.mesh.receiveShadow = true;
                     this.mesh.castShadow = true;
                     this.mesh.position.copy(this.gridPosition);
-
+                    this.alive = true;
+                    this.player = false;
+                    this.active = 0;
                     grid.set(encodePos(this.gridPosition), this.id);
                 }
 
-                attemptClimb() {
+                checkDeath() {
+                    let safe = this.check(new THREE.Vector3(-1, 0, 0)) < 0 ||
+                                this.check(new THREE.Vector3(1, 0, 0)) < 0 ||
+                                this.check(new THREE.Vector3(0, 0, -1)) < 0 ||
+                                this.check(new THREE.Vector3(0, 0, 1)) < 0 ||
+                                this.check(new THREE.Vector3(0, 1, 0)) < 0;
+                    
+                    if (!safe) {
+                        this.die();
+                    }
+                }
+            
+                die() {
+                    this.alive = false;
+                    this.mesh.material = deadCubeMaterial;
+                    this.mesh.castShadow = false;
+                }
+
+                checkClimb() {
                     if(this.check(xhat()) >= 0 ||
                     this.check(xhat().negate()) >= 0 ||
                     this.check(zhat()) >= 0 ||
                     this.check(zhat().negate()) >= 0) {
                         if (this.check(yhat() == -1)) {
-                            this.attemptMove(yhat());
+                            return true;
+                        } else {
+                            return false;
                         }
+                    } else {
+                        return false;
+                    }
+                }
+
+                attemptClimb() {
+                    if (this.checkClimb()) {
+                        this.move(yhat());
                     }
                 }
 
                 checkFall() {
+
                     let safe = this.check(new THREE.Vector3(0,-1,-1)) > -1 ||
                                 this.check(new THREE.Vector3(0,-1,0)) > -1 ||
                                 this.check(new THREE.Vector3(0,-1,1)) > -1 ||
@@ -261,11 +296,30 @@
 
                     if (this.gridPosition.y == 0) {
                         safe = true;
-                    }
+                    }   
                     if (!safe) {
                         // descend unto the earth
-                        this.move(yhat().negate());
+                        this.fall();
                     }
+                }
+
+                fallReaction(n) {
+                    let f = 0;
+                    for (let i=-1;i<2;i++) {
+                        for (let j=-1;j<2;j++) {
+                            f = this.check(new THREE.Vector3(i - n.x,1 - n.y,j - n.z));
+                            //console.log(i, j);
+                            if (f > -1) {
+                            console.log(f, "is above them");
+                            cubes[f].checkFall();
+                            }
+                        }
+                    }
+                }
+
+                fall() {
+                    console.log(this.id, "is falling");
+                    this.move(yhat().negate());                    
                 }
 
                 check(direction) {
@@ -301,45 +355,60 @@
                     newPos.y += direction.y;
                     newPos.z += direction.z;
                     
-                    console.log(newPos.x + " newPos.x");
-                    console.log(this.gridPosition.x + " gridPosition.x");
+                    //console.log(newPos.x + " newPos.x");
+                    //console.log(this.gridPosition.x + " gridPosition.x");
 
                     grid.delete(encodePos(this.gridPosition));
                     grid.set(encodePos(newPos), this.id);
                     this.gridPosition = newPos;
+                    this.fallReaction(direction);
                     this.checkFall();
                 }
 
                 attemptMove(direction) {
-                    let c = this.check(direction);
-                    console.log(c);
-                    if (c == -1) {
+                    if (this.check(direction) == -1) {
                         this.move(direction);
+                    }
+                }
+
+                aiMove() {
+                    //console.log("aiMove");
+                    this.checkDeath();
+                    if(this.checkClimb()) {
+                        this.move(yhat());
+                    } else {
+                        let options = [];
+                        if (this.check(xhat()) == -1) {
+                            options.push(xhat());
+                        } 
+                        if (this.check(xhat().negate()) == -1) {
+                            options.push(xhat().negate());
+                        }
+                        if (this.check(zhat()) == -1) {
+                            options.push(zhat());
+                        } 
+                        if (this.check(zhat().negate()) == -1) {
+                            options.push(zhat().negate());
+                        }
+                        this.move(options[rnd(options.length)]);
                     }
                 }
 
             }
 
             const geometry = new THREE.BoxGeometry();
-            const material = new THREE.MeshStandardMaterial( { color: 0xa7c330 } );
+            const livingCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xa7c330 } );
+            const deadCubeMaterial = new THREE.MeshStandardMaterial( {color: 0x999980} );
+            let activeCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xffffff } ); 
 
             let cubes = [];
 
             for (i = 0; i < 9; i++) {
 
-                // console.log(grid[5][5][5], "555");
-                // console.log(grid[6][5][5], "655");
-                // console.log(grid[5][6][5], "565");
-                // console.log(grid[5][5][6], "556");
-
-                cubes[i] = new cube(i, new THREE.Vector3(i, i-1, i), new THREE.Mesh(geometry, material));
-                cubes[0].gridPosition.y += 1;
+                cubes[i] = new cube(i, new THREE.Vector3(i, 0, i), new THREE.Mesh(geometry, livingCubeMaterial));
+                cubes[0].player = true;
                 scene.add(cubes[i].mesh);
 
-                // console.log(grid[5][5][5], "555");
-                // console.log(grid[6][5][5], "655");
-                // console.log(grid[5][6][5], "565");
-                // console.log(grid[5][5][6], "556");
 
 
                 // console.log(grid[cubes[i].gridPosition.x]
@@ -347,25 +416,70 @@
                 // [cubes[i].gridPosition.z]);
             }
 
-            camera.position.set( 0, 20, 40);
-            camera.rotation.x = -.4;
+            camera.position.set( 0, 15, 40);
+            camera.rotation.x = -.2;
             let rCamera = 40;
             let thetaCamera = 0;
             let rLight = 40
             let thetaLight = 0
+
+            let cubesToMovePerTurn = 2;
+
+            function gameUpdate() {
+                console.log("gup");
+
+                for (let i=0;i<cubes.length;i++) {
+                    if (cubes[i].active == 1) {
+                        cubes[i].aiMove();
+                        cubes[i].active = 0;
+                        cubes[i].mesh.material = livingCubeMaterial;
+                    }
+                }
+
+                let i = 0;
+                while (i < cubesToMovePerTurn) {
+                    console.log("sex");
+                    let n = rnd(cubes.length);
+                    if (cubes[n].alive && !cubes[n].player && cubes[n].active == 0) {
+                        cubes[n].active = 1;
+                        cubes[n].mesh.material = activeCubeMaterial;
+                        i++;
+                    }
+                }
+
+            }
+
+            let startTime = (new Date()).getTime();
+            //console.log(startTime);
+            let timeRunning = 0;
+            let sec = 0;
+
 			function animate() {
 				requestAnimationFrame( animate );
+
+                timeRunning = (new Date()).getTime() - startTime;
+                //console.log(timeRunning/1000, "timerunning/1000");
+                //console.log(sec);
+
+                if (Math.floor(timeRunning / 1000) > sec) {
+                    sec = Math.floor(timeRunning / 1000);
+                    gameUpdate();
+                }
+
                 //camera.rotateOnWorldAxis(yhat(), 0.01);
                 //thetaCamera += 0.01;
-                thetaLight -= 0.005;
-                camera.position.x = rCamera * Math.sin(thetaCamera);
-                camera.position.z = rCamera * Math.cos(thetaCamera);
+                thetaLight -= 0.01;
+                camera.position.x = rCamera * Math.sin(thetaCamera) + maxGridCoordinate;
+                camera.position.z = rCamera * Math.cos(thetaCamera) + maxGridCoordinate;
 
-                dirLight.position.x = rLight * Math.sin(thetaLight);
-                dirLight.position.z = rLight * Math.cos(thetaLight);
+                //dirLight.position.x = rLight * Math.sin(thetaLight);
+                //dirLight.position.z = rLight * Math.cos(thetaLight);
 
                 //console.log(cubes[0].gridPosition.x);
-                cubes[0].mesh.position.lerp(cubes[0].gridPosition, 0.3);
+                for (let i=0;i<cubes.length;i++) {
+                    cubes[i].mesh.position.lerp(cubes[i].gridPosition, 0.2);
+                }
+
 
 				renderer.render( scene, camera );
 			};
