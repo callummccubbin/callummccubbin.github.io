@@ -139,13 +139,19 @@
 
             // // GROUND
 
-            const groundGeo = new THREE.PlaneGeometry( 10000, 10000 );
+            //const groundGeo = new THREE.PlaneGeometry( 10000, 10000 );
+            const groundGeo = new THREE.SphereGeometry(500, 128, 32, 0, 2 * Math.PI, 0, 0.5);
             const groundMat = new THREE.MeshLambertMaterial( { color: 0xffffff } );
             groundMat.color.setHSL( 0.095, 1, 0.75 );
 
+            const maxGridCoordinate = 15;
+
             const ground = new THREE.Mesh( groundGeo, groundMat );
-            ground.position.y = -0.5;
-            ground.rotation.x = - Math.PI / 2;
+            ground.position.y = -500.3;
+            ground.position.x = maxGridCoordinate;
+            ground.position.z = maxGridCoordinate;
+            //ground.position.y = -0.5;
+            //ground.rotation.x = - Math.PI / 2;
             ground.receiveShadow = true;
             scene.add( ground );
 
@@ -176,20 +182,22 @@
 
             // GRID
 
-            const maxGridCoordinate = 15;
             const gridSize = maxGridCoordinate * 2 + 1;
-
+            const gridHeight = 100;
+ 
             let grid = new Map();
 
             function encodePos(pos) {
-                let gridKey = pos.x + (pos.y * gridSize) + (pos.z * (gridSize ** 2));
+                let gridKey = pos.x + (pos.y * gridSize) + (pos.z * (gridSize * gridHeight));
                 return gridKey;
             }
 
             function decodeGridKey(gridKey) {
                 let x = gridKey % gridSize;
-                let y = ((gridKey - x) % (gridSize ** 2)) / gridSize;
-                let z = (gridKey - x - (y * gridSize)) / (gridSize ** 2);
+                //let y = ((gridKey - x) % (gridSize ** 2)) / gridSize;
+                let y = ((gridKey - x) / gridSize) % gridHeight;
+                //let z = (gridKey - x - (y * gridSize)) / (gridSize ** 2);
+                let z = (((gridKey - x) / gridSize) - y) / gridHeight;
                 return new THREE.Vector3(x, y, z);
             }
 
@@ -353,7 +361,7 @@
                     newPos.z += direction.z;
 
                     if (newPos.x < gridSize &&
-                        newPos.y < gridSize &&
+                        newPos.y < gridHeight &&
                         newPos.z < gridSize &&
                     newPos.x >= 0 &&
                     newPos.y >= 0 &&
@@ -461,7 +469,7 @@
             const livingCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xa7c330 } );
             let deadCubeMaterial = new THREE.MeshStandardMaterial( { color: 0x999980 } );
             let activeCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xffffff } );
-            let playerCubeMaterial = new THREE.MeshStandardMaterial( { color: 0x2B3E28} );
+            let playerCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xB05C4C} );
 
             let cubes = [];
 
@@ -485,7 +493,7 @@
             let deadCubes = 0;
 
             function gameUpdate() {
-                //console.log("gup");
+                console.log("max height =", highestCubeHeight);
 
                 for (let i=0;i<cubes.length;i++) {
                     if (cubes[i].active == 1) {
@@ -504,7 +512,6 @@
                 }
 
             }
-            camera.position.set( 0, 15, 10);
             camera.rotation.x = -.2;
 
             let cameraBaseHeight = 15;
@@ -514,6 +521,8 @@
             let thetaCameraDot = 0.0004;
             let rLight = 40
             let thetaLight = 0
+
+            camera.position.set( 0, cameraBaseHeight, rCamera);
 
             let updateTimeMs = 150;
             let startTime = (new Date()).getTime();
@@ -538,8 +547,8 @@
                 thetaLight -= 0.001;
                 camera.position.x = rCamera * Math.sin(thetaCamera) + maxGridCoordinate;
                 camera.position.z = rCamera * Math.cos(thetaCamera) + maxGridCoordinate;
-                camera.position.y = lerp(camera.position.y, cameraBaseHeight + highestCubeHeight * 0.5, 0.1);
-                rCamera = lerp(rCamera, rCameraBase + highestCubeHeight, 0.1);
+                camera.position.y = lerp(camera.position.y, cameraBaseHeight + highestCubeHeight * 0.75, 0.1);
+                rCamera = lerp(rCamera, rCameraBase + highestCubeHeight * 1.5, 0.1);
                 //console.log(camera.position.y);
 
                 dirLight.position.x = rLight * Math.sin(thetaLight);
