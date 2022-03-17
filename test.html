@@ -310,7 +310,7 @@
                             f = this.check(new THREE.Vector3(i - n.x,1 - n.y,j - n.z));
                             //console.log(i, j);
                             if (f > -1) {
-                            console.log(f, "is above them");
+                            //console.log(f, "is above them");
                             cubes[f].checkFall();
                             }
                         }
@@ -380,15 +380,27 @@
                         let options = [];
                         if (this.check(xhat()) == -1) {
                             options.push(xhat());
+                            if (this.check(xhat().multiplyScalar(2)) >= 0) {
+                                options.push(xhat());
+                            }
                         } 
                         if (this.check(xhat().negate()) == -1) {
                             options.push(xhat().negate());
+                            if (this.check(xhat().negate().multiplyScalar(2)) >= 0) {
+                                options.push(xhat().negate());
+                            }
                         }
                         if (this.check(zhat()) == -1) {
                             options.push(zhat());
+                            if (this.check(zhat().multiplyScalar(2)) >= 0) {
+                                options.push(zhat());
+                            }
                         } 
                         if (this.check(zhat().negate()) == -1) {
                             options.push(zhat().negate());
+                            if (this.check(zhat().negate().multiplyScalar(2)) >= 0) {
+                                options.push(zhat().negate());
+                            }
                         }
                         this.move(options[rnd(options.length)]);
                     }
@@ -403,30 +415,32 @@
 
             let cubes = [];
 
-            for (i = 0; i < 9; i++) {
-
-                cubes[i] = new cube(i, new THREE.Vector3(i, 0, i), new THREE.Mesh(geometry, livingCubeMaterial));
-                cubes[0].player = true;
-                scene.add(cubes[i].mesh);
-
-
-
-                // console.log(grid[cubes[i].gridPosition.x]
-                // [cubes[i].gridPosition.y]
-                // [cubes[i].gridPosition.z]);
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 5; j++) {
+                    cubes.push(new cube(i, new THREE.Vector3(i, 0, j), new THREE.Mesh(geometry, livingCubeMaterial)));
+                }
             }
+
+            for (let i = 0; i < cubes.length; i++) {
+                scene.add(cubes[i].mesh);
+            }
+                    
+            cubes[0].player = true;
+
 
             camera.position.set( 0, 15, 40);
             camera.rotation.x = -.2;
+
             let rCamera = 40;
             let thetaCamera = 0;
+            let thetaCameraDot = 0.001;
             let rLight = 40
             let thetaLight = 0
 
             let cubesToMovePerTurn = 2;
 
             function gameUpdate() {
-                console.log("gup");
+                //console.log("gup");
 
                 for (let i=0;i<cubes.length;i++) {
                     if (cubes[i].active == 1) {
@@ -438,7 +452,6 @@
 
                 let i = 0;
                 while (i < cubesToMovePerTurn) {
-                    console.log("sex");
                     let n = rnd(cubes.length);
                     if (cubes[n].alive && !cubes[n].player && cubes[n].active == 0) {
                         cubes[n].active = 1;
@@ -466,8 +479,8 @@
                     gameUpdate();
                 }
 
-                //camera.rotateOnWorldAxis(yhat(), 0.01);
-                //thetaCamera += 0.01;
+                camera.rotateOnWorldAxis(yhat(), thetaCameraDot);
+                thetaCamera += thetaCameraDot;
                 thetaLight -= 0.01;
                 camera.position.x = rCamera * Math.sin(thetaCamera) + maxGridCoordinate;
                 camera.position.z = rCamera * Math.cos(thetaCamera) + maxGridCoordinate;
