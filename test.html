@@ -230,6 +230,10 @@
                 return Math.floor(Math.random() * x);
             }
 
+            function positionRelativeToGridCenter(pos) {
+                let gridCenter = new THREE.Vector3(maxGridCoordinate + 1, 0, maxGridCoordinate + 1);
+            }
+
             // -----------------------------------------
 
             class cube {
@@ -300,12 +304,12 @@
                     let safe = this.check(new THREE.Vector3(0,-1,-1)) > -1 ||
                                 this.check(new THREE.Vector3(0,-1,0)) > -1 ||
                                 this.check(new THREE.Vector3(0,-1,1)) > -1 ||
-                                this.check(new THREE.Vector3(1,-1,-1)) > -1 ||
+                                //this.check(new THREE.Vector3(1,-1,-1)) > -1 ||
                                 this.check(new THREE.Vector3(1,-1,0)) > -1 ||
-                                this.check(new THREE.Vector3(1,-1,1)) > -1 ||
-                                this.check(new THREE.Vector3(-1,-1,-1)) > -1 ||
-                                this.check(new THREE.Vector3(-1,-1,0)) > -1 ||
-                                this.check(new THREE.Vector3(-1,-1,1)) > -1;
+                                //this.check(new THREE.Vector3(1,-1,1)) > -1 ||
+                                //this.check(new THREE.Vector3(-1,-1,-1)) > -1 ||
+                                this.check(new THREE.Vector3(-1,-1,0)) > -1;
+                                //this.check(new THREE.Vector3(-1,-1,1)) > -1;
 
                     if (this.gridPosition.y == 0) {
                         safe = true;
@@ -482,7 +486,7 @@
 
             let rCamera = 50;
             let thetaCamera = 0;
-            let thetaCameraDot = 0.001;
+            let thetaCameraDot = 0.0001;
             let rLight = 40
             let thetaLight = 0
 
@@ -498,13 +502,13 @@
                 //console.log(timeRunning/1000, "timerunning/1000");
                 //console.log(sec);
 
-                if (Math.floor(timeRunning / 1000) > sec) {
-                    sec = Math.floor(timeRunning / 1000);
+                if (Math.floor(timeRunning / 500) > sec) {
+                    sec = Math.floor(timeRunning / 500);
                     gameUpdate();
                 }
 
-                //camera.rotateOnWorldAxis(yhat(), thetaCameraDot);
-                //thetaCamera += thetaCameraDot;
+                camera.rotateOnWorldAxis(yhat(), thetaCameraDot);
+                thetaCamera += thetaCameraDot;
                 thetaLight -= 0.01;
                 camera.position.x = rCamera * Math.sin(thetaCamera) + maxGridCoordinate;
                 camera.position.z = rCamera * Math.cos(thetaCamera) + maxGridCoordinate;
