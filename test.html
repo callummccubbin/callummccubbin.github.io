@@ -56,8 +56,10 @@
                 return; // Do nothing if the event was already processed
             }
 
+
             switch (event.key) {
                 case "ArrowDown":
+                    console.log("death");
                     cubes[0].attemptMove(zhat());
                 break;
                 case "ArrowUp":
@@ -71,12 +73,14 @@
                     cubes[0].attemptMove(xhat());
                 break;
                 case " ":
-                    cubes[0].attemptClimb();
+                    cubes[0].attemptMove(yhat());
+                break;
+
                 default:
                 return; // Quit when this doesn't handle the key event.
             }
 
-            // Cancel the default action to avoid it being handled twice
+            //Cancel the default action to avoid it being handled twice
             event.preventDefault();
             }, true);
 
@@ -172,7 +176,7 @@
 
             // GRID
 
-            const maxGridCoordinate = 5
+            const maxGridCoordinate = 10;
             const gridSize = maxGridCoordinate * 2 + 1;
 
             let grid = new Map();
@@ -244,29 +248,38 @@
                 }
 
                 checkDeath() {
-                    let safe = this.check(new THREE.Vector3(-1, 0, 0)) < 0 ||
-                                this.check(new THREE.Vector3(1, 0, 0)) < 0 ||
-                                this.check(new THREE.Vector3(0, 0, -1)) < 0 ||
-                                this.check(new THREE.Vector3(0, 0, 1)) < 0 ||
-                                this.check(new THREE.Vector3(0, 1, 0)) < 0;
+
+                    let danger = this.check(xhat()) >= 0 &&
+                                this.check(zhat()) >= 0 &&
+                                this.check(xhat().negate()) >= 0 &&
+                                this.check(zhat().negate()) >= 0 &&
+                                this.check(yhat()) >= 0;
+
+
+                    //console.log("above me is", this.check(yhat()));
                     
-                    if (!safe) {
+                    if (danger) {
                         this.die();
+                        return true;
                     }
                 }
             
                 die() {
+                    //console.log("I am die.");
+                    //console.log(this.mesh.material.color);
                     this.alive = false;
                     this.mesh.material = deadCubeMaterial;
                     this.mesh.castShadow = false;
+                    this.active = false;
                 }
 
-                checkClimb() {
+                canClimb() {
                     if(this.check(xhat()) >= 0 ||
                     this.check(xhat().negate()) >= 0 ||
                     this.check(zhat()) >= 0 ||
                     this.check(zhat().negate()) >= 0) {
-                        if (this.check(yhat() == -1)) {
+                        //console.log("above me is", this.check(yhat()));
+                        if (this.check(yhat()) == -1) {
                             return true;
                         } else {
                             return false;
@@ -277,7 +290,7 @@
                 }
 
                 attemptClimb() {
-                    if (this.checkClimb()) {
+                    if (this.canClimb()) {
                         this.move(yhat());
                     }
                 }
@@ -318,7 +331,7 @@
                 }
 
                 fall() {
-                    console.log(this.id, "is falling");
+                    //console.log(this.id, "is falling");
                     this.move(yhat().negate());                    
                 }
 
@@ -373,53 +386,67 @@
 
                 aiMove() {
                     //console.log("aiMove");
-                    this.checkDeath();
-                    if(this.checkClimb()) {
-                        this.move(yhat());
-                    } else {
-                        let options = [];
-                        if (this.check(xhat()) == -1) {
-                            options.push(xhat());
-                            if (this.check(xhat().multiplyScalar(2)) >= 0) {
+                    let d = this.checkDeath();
+
+                    if(!d) {
+                        let x = this.canClimb();
+                        if(x) {
+                            //console.log("canClimb");
+                            this.move(yhat());
+                        } else {
+                            let options = [];
+                            if (this.check(xhat()) == -1) {
                                 options.push(xhat());
-                            }
-                        } 
-                        if (this.check(xhat().negate()) == -1) {
-                            options.push(xhat().negate());
-                            if (this.check(xhat().negate().multiplyScalar(2)) >= 0) {
+                                if (this.check(xhat().multiplyScalar(2)) >= 0) {
+                                    options.push(xhat());
+                                }
+                            } 
+                            if (this.check(xhat().negate()) == -1) {
                                 options.push(xhat().negate());
+                                if (this.check(xhat().negate().multiplyScalar(2)) >= 0) {
+                                    options.push(xhat().negate());
+                                }
                             }
-                        }
-                        if (this.check(zhat()) == -1) {
-                            options.push(zhat());
-                            if (this.check(zhat().multiplyScalar(2)) >= 0) {
+                            if (this.check(zhat()) == -1) {
                                 options.push(zhat());
-                            }
-                        } 
-                        if (this.check(zhat().negate()) == -1) {
-                            options.push(zhat().negate());
-                            if (this.check(zhat().negate().multiplyScalar(2)) >= 0) {
+                                if (this.check(zhat().multiplyScalar(2)) >= 0) {
+                                    options.push(zhat());
+                                }
+                            } 
+                            if (this.check(zhat().negate()) == -1) {
                                 options.push(zhat().negate());
+                                if (this.check(zhat().negate().multiplyScalar(2)) >= 0) {
+                                    options.push(zhat().negate());
+                                }
+                            }
+                            //let c = options[rnd(options.length)]
+                            //console.log(options, "options");
+                            if (options.length > 0) {
+                                this.move(options[rnd(options.length)]);
                             }
                         }
-                        this.move(options[rnd(options.length)]);
+                        this.active = 0;
+                        this.mesh.material = livingCubeMaterial;
                     }
+
                 }
 
             }
 
             const geometry = new THREE.BoxGeometry();
             const livingCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xa7c330 } );
-            const deadCubeMaterial = new THREE.MeshStandardMaterial( {color: 0x999980} );
+            let deadCubeMaterial = new THREE.MeshStandardMaterial( { color: 0x999980 } );
             let activeCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xffffff } ); 
 
             let cubes = [];
 
-            for (let i = 0; i < 5; i++) {
-                for (let j = 0; j < 5; j++) {
+            for (let i = 0; i < 20; i++) {
+                for (let j = 0; j < 20; j++) {
                     cubes.push(new cube(i, new THREE.Vector3(i, 0, j), new THREE.Mesh(geometry, livingCubeMaterial)));
                 }
             }
+
+            //cubes[0] = new cube(0, new THREE.Vector3(5, 0, 5), new THREE.Mesh(geometry, livingCubeMaterial));
 
             for (let i = 0; i < cubes.length; i++) {
                 scene.add(cubes[i].mesh);
@@ -428,16 +455,7 @@
             cubes[0].player = true;
 
 
-            camera.position.set( 0, 15, 40);
-            camera.rotation.x = -.2;
-
-            let rCamera = 40;
-            let thetaCamera = 0;
-            let thetaCameraDot = 0.001;
-            let rLight = 40
-            let thetaLight = 0
-
-            let cubesToMovePerTurn = 2;
+            let cubesToMovePerTurn = 20;
 
             function gameUpdate() {
                 //console.log("gup");
@@ -445,15 +463,13 @@
                 for (let i=0;i<cubes.length;i++) {
                     if (cubes[i].active == 1) {
                         cubes[i].aiMove();
-                        cubes[i].active = 0;
-                        cubes[i].mesh.material = livingCubeMaterial;
                     }
                 }
 
                 let i = 0;
                 while (i < cubesToMovePerTurn) {
                     let n = rnd(cubes.length);
-                    if (cubes[n].alive && !cubes[n].player && cubes[n].active == 0) {
+                    if (cubes[n].alive && !cubes[n].player && (cubes[n].active == 0)) {
                         cubes[n].active = 1;
                         cubes[n].mesh.material = activeCubeMaterial;
                         i++;
@@ -461,6 +477,14 @@
                 }
 
             }
+            camera.position.set( 0, 30, 10);
+            camera.rotation.x = -.45;
+
+            let rCamera = 50;
+            let thetaCamera = 0;
+            let thetaCameraDot = 0.001;
+            let rLight = 40
+            let thetaLight = 0
 
             let startTime = (new Date()).getTime();
             //console.log(startTime);
@@ -479,8 +503,8 @@
                     gameUpdate();
                 }
 
-                camera.rotateOnWorldAxis(yhat(), thetaCameraDot);
-                thetaCamera += thetaCameraDot;
+                //camera.rotateOnWorldAxis(yhat(), thetaCameraDot);
+                //thetaCamera += thetaCameraDot;
                 thetaLight -= 0.01;
                 camera.position.x = rCamera * Math.sin(thetaCamera) + maxGridCoordinate;
                 camera.position.z = rCamera * Math.cos(thetaCamera) + maxGridCoordinate;
