@@ -60,17 +60,21 @@
             switch (event.key) {
                 case "ArrowDown":
                     //console.log("death");
-                    cubes[0].attemptMove(zhat());
+                    //cubes[0].attemptMove(zhat());
+                    rotateControls(zhat());
                 break;
                 case "ArrowUp":
                     //console.log("up");
-                    cubes[0].attemptMove(zhat().negate());
+                    //cubes[0].attemptMove(zhat().negate());
+                    rotateControls(zhat().negate());
                 break;
                 case "ArrowLeft":
-                    cubes[0].attemptMove(xhat().negate());
+                    //cubes[0].attemptMove(xhat().negate());
+                    rotateControls(xhat().negate());
                 break;
                 case "ArrowRight":
-                    cubes[0].attemptMove(xhat());
+                    //cubes[0].attemptMove(xhat());
+                    rotateControls(xhat());
                 break;
                 case " ":
                     cubes[0].attemptMove(yhat());
@@ -78,6 +82,25 @@
 
                 default:
                 return; // Quit when this doesn't handle the key event.
+            }
+
+            function rotateControls(direction) {
+                let s = Math.round((thetaCamera * 2 / Math.PI)) % 4;
+                let dir = new THREE.Vector3(0, 0, 0);
+
+                if (s == 0) {
+                    dir.copy(direction);
+                } else if (s == 1) {
+                    dir.x = direction.z;
+                    dir.z = -direction.x;
+                } else if (s == 2) {
+                    dir.copy(direction.negate());
+                } else if (s == 3) {
+                    dir.z = direction.x;
+                    dir.x = -direction.z;
+                }
+                console.log("s = ", s);
+                cubes[0].attemptMove(dir);
             }
 
             //Cancel the default action to avoid it being handled twice
@@ -147,7 +170,7 @@
             const maxGridCoordinate = 15;
 
             const ground = new THREE.Mesh( groundGeo, groundMat );
-            ground.position.y = -500.4;
+            ground.position.y = -500.1  ;
             ground.position.x = maxGridCoordinate;
             ground.position.z = maxGridCoordinate;
             //ground.position.y = -0.5;
@@ -557,8 +580,12 @@
             let cubesToMovePerTurn = 60;
             let deadCubes = 0;
 
+            if (cubesToMovePerTurn > cubes.length) {
+                cubesToMovePerTurn = cubes.length - 1;
+            }
+
             function gameUpdate() {
-                console.log("max height =", highestCubeHeight);
+                //console.log("max height =", highestCubeHeight);
 
                 for (let i=0;i<cubes.length;i++) {
                     if (cubes[i].active == 1) {
@@ -587,7 +614,7 @@
             let rCameraBase = 50;
             let rCamera = 50;
             let thetaCamera = 0;
-            let thetaCameraDot = 0.0004;
+            let thetaCameraDot = 0.0008;
             let rLight = 40
             let thetaLight = 0
 
