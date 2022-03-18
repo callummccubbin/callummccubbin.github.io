@@ -59,7 +59,7 @@
 
             switch (event.key) {
                 case "ArrowDown":
-                    console.log("death");
+                    //console.log("death");
                     cubes[0].attemptMove(zhat());
                 break;
                 case "ArrowUp":
@@ -147,7 +147,7 @@
             const maxGridCoordinate = 15;
 
             const ground = new THREE.Mesh( groundGeo, groundMat );
-            ground.position.y = -500.3;
+            ground.position.y = -500.4;
             ground.position.x = maxGridCoordinate;
             ground.position.z = maxGridCoordinate;
             //ground.position.y = -0.5;
@@ -160,12 +160,12 @@
             const vertexShader = document.getElementById( 'vertexShader' ).textContent;
             const fragmentShader = document.getElementById( 'fragmentShader' ).textContent;
             const uniforms = {
-                'topColor': { value: new THREE.Color( 0x0077ff ) },
+                'topColor': { value: new THREE.Color( 0x0077ff  ) },
                 'bottomColor': { value: new THREE.Color( 0xffffff ) },
-                'offset': { value: 33 },
-                'exponent': { value: 0.6 }
+                'offset': { value: 550 },
+                'exponent': { value: 0.65 }
             };
-            uniforms[ 'topColor' ].value.copy( hemiLight.color );
+            //uniforms[ 'topColor' ].value.copy( hemiLight.color );
 
             scene.fog.color.copy( uniforms[ 'bottomColor' ].value );
 
@@ -183,13 +183,24 @@
             // GRID
 
             const gridSize = maxGridCoordinate * 2 + 1;
-            const gridHeight = 100;
+            const gridHeight = 150;
  
             let grid = new Map();
 
             function encodePos(pos) {
-                let gridKey = pos.x + (pos.y * gridSize) + (pos.z * (gridSize * gridHeight));
-                return gridKey;
+                if (pos.x >= 0 &&
+                    pos.y >= 0 &&
+                    pos.z >= 0 &&
+                    pos.x < gridSize &&
+                    pos.y < gridHeight &&
+                    pos.z < gridSize) {
+
+                    let gridKey = pos.x + (pos.y * gridSize) + (pos.z * (gridSize * gridHeight));
+                    return gridKey;
+                } else {
+                    return -1;
+                }
+                
             }
 
             function decodeGridKey(gridKey) {
@@ -202,8 +213,7 @@
             }
 
             // -1 means there's empty space
-            // -2 means there's a dead cube
-            // 0 and greater is a living cube of that id number
+            // 0 and greater is a cube of that id number
 
             let gridHelper = new THREE.GridHelper(gridSize, gridSize);
             scene.add(gridHelper);
@@ -260,6 +270,7 @@
                     this.player = false;
                     this.active = 0;
                     grid.set(encodePos(this.gridPosition), this.id);
+                    //console.log(grid.get(encodePos(this.gridPosition)), "is at", encodePos(this.gridPosition));
                 }
 
                 checkDeath() {
@@ -287,7 +298,7 @@
                     this.mesh.castShadow = false;
                     this.active = false;
                     deadCubes++;
-                    console.log(deadCubes);
+                    console.log(deadCubes, "dead cubes");
                 }
 
                 canClimb() {
@@ -318,12 +329,8 @@
                     let safe = this.check(new THREE.Vector3(0,-1,-1)) > -1 ||
                                 this.check(new THREE.Vector3(0,-1,0)) > -1 ||
                                 this.check(new THREE.Vector3(0,-1,1)) > -1 ||
-                                //this.check(new THREE.Vector3(1,-1,-1)) > -1 ||
                                 this.check(new THREE.Vector3(1,-1,0)) > -1 ||
-                                //this.check(new THREE.Vector3(1,-1,1)) > -1 ||
-                                //this.check(new THREE.Vector3(-1,-1,-1)) > -1 ||
                                 this.check(new THREE.Vector3(-1,-1,0)) > -1;
-                                //this.check(new THREE.Vector3(-1,-1,1)) > -1;
 
                     if (this.gridPosition.y == 0) {
                         safe = true;
@@ -335,17 +342,56 @@
                 }
 
                 fallReaction(n) {
-                    let f = 0;
-                    for (let i=-1;i<2;i++) {
-                        for (let j=-1;j<2;j++) {
-                            f = this.check(new THREE.Vector3(i - n.x,1 - n.y,j - n.z));
-                            //console.log(i, j);
-                            if (f > -1) {
-                            //console.log(f, "is above them");
-                            cubes[f].checkFall();
-                            }
-                        }
+                    //console.log("fallreact for cube", this.id);
+
+                    let p = new THREE.Vector3(0, 0, 0);
+                    
+                    p.copy(this.gridPosition);
+                    p.add(n.negate());
+                    
+                    let p2 = new THREE.Vector3(0, 0, 0);
+                    p2.copy(p);
+
+                    p2.add(yhat());
+                    if (grid.has(encodePos(p2))) {
+                        cubes[grid.get(encodePos(p2))].checkFall();
                     }
+
+                    p2.x += 1;
+                    if (grid.has(encodePos(p2))) {
+                        cubes[grid.get(encodePos(p2))].checkFall();
+                    }
+
+                    p2.x -= 2;
+
+                    if (grid.has(encodePos(p2))) {
+                        cubes[grid.get(encodePos(p2))].checkFall();
+                    }
+
+                    p2.x += 1;
+                    p2.z += 1;
+
+                    if (grid.has(encodePos(p2))) {
+                        cubes[grid.get(encodePos(p2))].checkFall();
+                    }
+                    
+                    p2.z -= 2;
+
+                    if (grid.has(encodePos(p2))) {
+                        cubes[grid.get(encodePos(p2))].checkFall();
+                    }
+
+                    //let f = 0;
+                    // for (let i=-1;i<2;i++) {
+                    //     for (let j=-1;j<2;j++) {
+                    //         f = this.check(new THREE.Vector3(i - n.x,1 - n.y,j - n.z));
+                    //         //console.log(i, j);
+                    //         if (f > -1) {
+                    //         //console.log(f, "is above them");
+                    //         cubes[f].checkFall();
+                    //         }
+                    //     }
+                    // }
                 }
 
                 fall() {
@@ -392,6 +438,7 @@
                     grid.delete(encodePos(this.gridPosition));
                     grid.set(encodePos(newPos), this.id);
                     this.gridPosition = newPos;
+                    //console.log("moving in ", direction);
                     this.fallReaction(direction);
                     this.checkFall();
                 }
@@ -475,7 +522,7 @@
 
             for (let i = 0; i < gridSize; i++) {
                 for (let j = 0; j < gridSize; j++) {
-                    cubes.push(new cube(i, new THREE.Vector3(i, 0, j), new THREE.Mesh(geometry, livingCubeMaterial)));
+                    cubes.push(new cube(cubes.length, new THREE.Vector3(i, 0, j), new THREE.Mesh(geometry, livingCubeMaterial)));
                 }
             }
 
@@ -508,6 +555,10 @@
                         cubes[n].active = 1;
                         cubes[n].mesh.material = activeCubeMaterial;
                         i++;
+                    }
+                    // This is for the case that the game tries to move more cubes in an update than there living cubes.
+                    if (i >= cubes.length) {
+                        i = cubesToMovePerTurn;
                     }
                 }
 
@@ -547,7 +598,7 @@
                 thetaLight -= 0.001;
                 camera.position.x = rCamera * Math.sin(thetaCamera) + maxGridCoordinate;
                 camera.position.z = rCamera * Math.cos(thetaCamera) + maxGridCoordinate;
-                camera.position.y = lerp(camera.position.y, cameraBaseHeight + highestCubeHeight * 0.75, 0.1);
+                camera.position.y = lerp(camera.position.y, cameraBaseHeight + highestCubeHeight * 0.65, 0.1);
                 rCamera = lerp(rCamera, rCameraBase + highestCubeHeight * 1.5, 0.1);
                 //console.log(camera.position.y);
 
