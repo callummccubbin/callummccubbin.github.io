@@ -299,6 +299,7 @@
                     this.active = false;
                     deadCubes++;
                     console.log(deadCubes, "dead cubes");
+                    spawnCube(1);
                 }
 
                 canClimb() {
@@ -520,16 +521,33 @@
 
             let cubes = [];
 
-            for (let i = 0; i < gridSize; i++) {
-                for (let j = 0; j < gridSize; j++) {
-                    cubes.push(new cube(cubes.length, new THREE.Vector3(i, 0, j), new THREE.Mesh(geometry, livingCubeMaterial)));
+            // for (let i = 0; i < 2; i++) {
+            //     for (let j = 0; j < 1; j++) {
+            //         cubes.push(new cube(cubes.length, new THREE.Vector3(i, 0, j), new THREE.Mesh(geometry, livingCubeMaterial)));
+            //     }
+            // }
+
+            // for (let i = 0; i < cubes.length; i++) {
+            //     scene.add(cubes[i].mesh);
+            // }
+
+            spawnCube(900);
+
+            function spawnCube(n) {
+                let i = 0;
+                let j = 0;
+                while (i < n) {
+                    let place = new THREE.Vector3(rnd(gridSize), 0, rnd(gridSize));
+                    if (!grid.has(encodePos(place))) {
+                        cubes.push(new cube(cubes.length, place, new THREE.Mesh(geometry, livingCubeMaterial)));
+                        scene.add(cubes[cubes.length - 1].mesh);
+                        i++;
+                    }
+                    j++;
+                    if (j > 100000) {
+                        break;
+                    }
                 }
-            }
-
-            //cubes[0] = new cube(0, new THREE.Vector3(5, 0, 5), new THREE.Mesh(geometry, livingCubeMaterial));
-
-            for (let i = 0; i < cubes.length; i++) {
-                scene.add(cubes[i].mesh);
             }
                     
             cubes[0].player = true;
