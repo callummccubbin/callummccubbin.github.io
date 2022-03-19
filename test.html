@@ -88,7 +88,7 @@
             }
 
             function rotateControls(direction) {
-                let s = Math.round((thetaPlayer * 2 / Math.PI)) % 4;
+                let s = Math.round((thetaPlayer * 2 / Math.PI + 4)) % 4;
                 console.log(s, "=s");
                 let dir = new THREE.Vector3(0, 0, 0);
 
@@ -167,7 +167,7 @@
             // // GROUND
 
             //const groundGeo = new THREE.PlaneGeometry( 10000, 10000 );
-            const groundGeo = new THREE.SphereGeometry(500, 128, 32, 0, 2 * Math.PI, 0, 0.5);
+            const groundGeo = new THREE.SphereGeometry(500, 128, 32, 0, 2 * Math.PI, 0, 1);
             const groundMat = new THREE.MeshLambertMaterial( { color: 0xffffff } );
             groundMat.color.setHSL( 0.095, 1, 0.75 );
 
@@ -189,7 +189,7 @@
             const uniforms = {
                 'topColor': { value: new THREE.Color( 0x0077ff  ) },
                 'bottomColor': { value: new THREE.Color( 0xffffff ) },
-                'offset': { value: 550 },
+                'offset': { value: 800 },
                 'exponent': { value: 0.65 }
             };
             //uniforms[ 'topColor' ].value.copy( hemiLight.color );
@@ -540,7 +540,7 @@
 
 
                             //If you don't move, you're itchy. You need to move.
-                            if(options.length < 2 && this.gridPosition.y < highestCubeHeight / 2) {
+                            if(options.length < 2 && this.gridPosition.y < rnd(highestCubeHeight)) {
                                 this.aiAddOption(xhat(), options);
                                 this.aiAddOption(xhat().negate(), options);
                                 this.aiAddOption(zhat().negate(), options);
@@ -623,7 +623,7 @@
                 }
                 //console.log("max height =", highestCubeHeight);
 
-                console.log("h");
+                //console.log("h");
 
                 for (let i=0;i<cubes.length;i++) {
                     if (cubes[i].active == 1) {
@@ -679,17 +679,19 @@
                 //camera.rotateOnWorldAxis(yhat(), thetaCameraDot);
 
                 thetaCamera += thetaCameraDot;
-                thetaLight -= 0.001;
+                thetaLight -= 0.005;
                 if (positionRelativeToGridCenter(cubes[0].gridPosition).length() > 0) {
-                    if (positionRelativeToGridCenter(cubes[0].gridPosition).x > 0) {
-                    thetaPlayer = Math.acos(positionRelativeToGridCenter(cubes[0].gridPosition).z / positionRelativeToGridCenter(cubes[0].gridPosition).length());
-                    } else if  (positionRelativeToGridCenter(cubes[0].gridPosition).x < 0) {
-                    thetaPlayer = Math.acos(-positionRelativeToGridCenter(cubes[0].gridPosition).z / positionRelativeToGridCenter(cubes[0].gridPosition).length()) + Math.PI;
-                    } else if (positionRelativeToGridCenter(cubes[0].gridPosition).x == 0) {
-                        if (positionRelativeToGridCenter(cubes[0].gridPosition).z > 0) {
-                            thetaPlayer = 0;
+                    if (positionRelativeToGridCenter(cubes[0].gridPosition).z > 0) {
+                        //console.log("RHS");
+                    thetaPlayer = Math.atan(positionRelativeToGridCenter(cubes[0].gridPosition).x / positionRelativeToGridCenter(cubes[0].gridPosition).z);
+                    } else if  (positionRelativeToGridCenter(cubes[0].gridPosition).z < 0) {
+                        //console.log("LHS");
+                    thetaPlayer = Math.atan(positionRelativeToGridCenter(cubes[0].gridPosition).x / positionRelativeToGridCenter(cubes[0].gridPosition).z) + Math.PI;
+                    } else if (positionRelativeToGridCenter(cubes[0].gridPosition).z == 0) {
+                        if (positionRelativeToGridCenter(cubes[0].gridPosition).x > 0) {
+                            thetaPlayer = Math.PI / 2;
                         } else {
-                            thetaPlayer = Math.PI;
+                            thetaPlayer = Math.PI * 3 / 2;
                         }
                     }
                 }
@@ -706,13 +708,13 @@
                 camera.position.z = lerp(camera.position.z, rCamera * Math.cos(thetaPlayer) + cubes[0].mesh.position.z, 0.5);
                 camera.quaternion.identity();
 
-                camera.rotation.x = -.4;
+                //camera.rotation.x = -.4;
                 //console.log(positionRelativeToGridCenter(cubes[0].gridPosition).z, "z");
                 //console.log(positionRelativeToGridCenter(cubes[0].gridPosition).x, "x");
                 //camera.rotateOnWorldAxis(yhat(), thetaPlayer);
                 camera.lookAt(cubes[0].mesh.position);
 
-                camera.position.y = lerp(camera.position.y, cubes[0].mesh.position.y + cameraBaseHeight, 0.2);
+                camera.position.y = lerp(camera.position.y, cubes[0].mesh.position.y + cameraBaseHeight - Math.min(cubes[0].gridPosition.y * 0.4, 2 * cameraBaseHeight), 0.2);
 
 
                 // camera.rotation.x = -1.56;
@@ -731,6 +733,7 @@
 
                 dirLight.position.x = rLight * Math.sin(thetaLight);
                 dirLight.position.z = rLight * Math.cos(thetaLight);
+                //dirlight.lookAt(zero());
 
                 //console.log(cubes[0].gridPosition.x);
                 
