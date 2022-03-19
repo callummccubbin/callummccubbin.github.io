@@ -677,6 +677,7 @@
                     gameUpdate();
                 }
                 //camera.rotateOnWorldAxis(yhat(), thetaCameraDot);
+
                 thetaCamera += thetaCameraDot;
                 thetaLight -= 0.001;
                 if (positionRelativeToGridCenter(cubes[0].gridPosition).length() > 0) {
@@ -693,6 +694,9 @@
                     }
                 }
                 
+                for (let i=0;i<cubes.length;i++) {
+                    cubes[i].mesh.position.lerp(cubes[i].gridPosition, 0.2);
+                }
 
                 //console.log(thetaPlayer, "= thetaPlayer");
                 //console.log(positionRelativeToGridCenter(cubes[0].gridPosition).x, "x");
@@ -708,7 +712,7 @@
                 //camera.rotateOnWorldAxis(yhat(), thetaPlayer);
                 camera.lookAt(cubes[0].mesh.position);
 
-                camera.position.y = lerp(camera.position.y, cubes[0].gridPosition.y + cameraBaseHeight, 0.2);
+                camera.position.y = lerp(camera.position.y, cubes[0].mesh.position.y + cameraBaseHeight, 0.2);
 
 
                 // camera.rotation.x = -1.56;
@@ -729,9 +733,7 @@
                 dirLight.position.z = rLight * Math.cos(thetaLight);
 
                 //console.log(cubes[0].gridPosition.x);
-                for (let i=0;i<cubes.length;i++) {
-                    cubes[i].mesh.position.lerp(cubes[i].gridPosition, 0.2);
-                }
+                
                 
                 activeCubeMaterial.color.setRGB(Math.min((1 - acmr) / updateTimeMs * (timeRunning % updateTimeMs) * 2 + acmr, 1),
                                                 Math.min((1 - acmg) / updateTimeMs * (timeRunning % updateTimeMs) * 2 + acmg, 1),
