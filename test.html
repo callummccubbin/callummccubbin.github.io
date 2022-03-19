@@ -618,7 +618,7 @@
 
             function gameUpdate() {
 
-                if (cubes[0].gridPosition.y > highestCubeHeight - 1) {
+                if (cubes[0].gridPosition.y > highestCubeHeight - 1 %% cubes[0].gridPosition.y > 12) {
                     nlf.play();
                 }
                 //console.log("max height =", highestCubeHeight);
