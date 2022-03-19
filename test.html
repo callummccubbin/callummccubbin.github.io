@@ -8,6 +8,9 @@
 		</style>
 	</head>
 	<body>
+        <audio id="au">
+            <source src="nlf.mp3" type="audio/mpeg">
+        </audio>
 		<script src="three.js"></script>
         <script type="x-shader/x-vertex" id="vertexShader">
 
@@ -342,11 +345,18 @@
                     }
                 }
 
-                attemptClimb() {
-                    if (this.canClimb()) {
-                        this.move(yhat());
-                    }
-                }
+                // attemptClimb() {
+                //     //if (this.canClimb()) {
+                //         this.move(yhat());
+                //         console.log("Hhhhhhhhhhhh");
+                //         if (this.gridPosition.y >= 3) {
+                //                 highestCubeHeight = this.gridPosition.y;
+                //                 console.log("hhhhhhhhhhhhhhhh");
+                //                 nlf.play();
+                //                 //spawnCube(highestCubeHeight);
+                //         }
+                //     //}
+                // }
 
                 checkFall() {
 
@@ -552,6 +562,8 @@
 
             }
 
+            let nlf = document.getElementById("au");
+
             const geometry = new THREE.BoxGeometry();
             const livingCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xa7c330 } );
             let deadCubeMaterial = new THREE.MeshStandardMaterial( { color: 0x999980 } );
@@ -605,6 +617,10 @@
             }
 
             function gameUpdate() {
+
+                if (cubes[0].gridPosition.y > highestCubeHeight - 1) {
+                    nlf.play();
+                }
                 //console.log("max height =", highestCubeHeight);
 
                 for (let i=0;i<cubes.length;i++) {
@@ -676,9 +692,9 @@
                 }
                 
 
-                console.log(thetaPlayer, "= thetaPlayer");
-                console.log(positionRelativeToGridCenter(cubes[0].gridPosition).x, "x");
-                console.log(positionRelativeToGridCenter(cubes[0].gridPosition).z, "z");
+                //console.log(thetaPlayer, "= thetaPlayer");
+                //console.log(positionRelativeToGridCenter(cubes[0].gridPosition).x, "x");
+                //console.log(positionRelativeToGridCenter(cubes[0].gridPosition).z, "z");
 
                 camera.position.x = lerp(camera.position.x, rCamera * Math.sin(thetaPlayer) + cubes[0].mesh.position.x, 0.5);
                 camera.position.z = lerp(camera.position.z, rCamera * Math.cos(thetaPlayer) + cubes[0].mesh.position.z, 0.5);
