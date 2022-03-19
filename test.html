@@ -85,7 +85,8 @@
             }
 
             function rotateControls(direction) {
-                let s = Math.round((thetaCamera * 2 / Math.PI)) % 4;
+                let s = Math.round((thetaPlayer * 2 / Math.PI)) % 4;
+                console.log(s, "=s");
                 let dir = new THREE.Vector3(0, 0, 0);
 
                 if (s == 0) {
@@ -99,7 +100,7 @@
                     dir.z = direction.x;
                     dir.x = -direction.z;
                 }
-                console.log("s = ", s);
+                //console.log("s = ", s);
                 cubes[0].attemptMove(dir);
             }
 
@@ -136,7 +137,7 @@
             const dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
             dirLight.color.setHSL( 0.1, 1, 0.95 );
             dirLight.position.set( - 1, 1.75, 1 );
-            dirLight.position.multiplyScalar( 30 );
+            dirLight.position.multiplyScalar( 90 );
             scene.add( dirLight );
 
             //const cameraHelper = new THREE.CameraHelper(dirLight.shadow.camera);
@@ -157,8 +158,8 @@
             dirLight.shadow.camera.far = 3500;
             dirLight.shadow.bias = - 0.000001;
 
-            //const dirLightHelper = new THREE.DirectionalLightHelper( dirLight, 10 );
-            //scene.add( dirLightHelper );
+            const dirLightHelper = new THREE.DirectionalLightHelper( dirLight, 10 );
+            scene.add( dirLightHelper );
 
             // // GROUND
 
@@ -167,10 +168,10 @@
             const groundMat = new THREE.MeshLambertMaterial( { color: 0xffffff } );
             groundMat.color.setHSL( 0.095, 1, 0.75 );
 
-            const maxGridCoordinate = 15;
+            const maxGridCoordinate = 25;
 
             const ground = new THREE.Mesh( groundGeo, groundMat );
-            ground.position.y = -500.1  ;
+            ground.position.y = -500.4  ;
             ground.position.x = maxGridCoordinate;
             ground.position.z = maxGridCoordinate;
             //ground.position.y = -0.5;
@@ -206,7 +207,7 @@
             // GRID
 
             const gridSize = maxGridCoordinate * 2 + 1;
-            const gridHeight = 150;
+            const gridHeight = 200;
  
             let grid = new Map();
 
@@ -318,10 +319,10 @@
                     //console.log(this.mesh.material.color);
                     this.alive = false;
                     this.mesh.material = deadCubeMaterial;
-                    this.mesh.castShadow = false;
                     this.active = false;
                     deadCubes++;
                     console.log(deadCubes, "dead cubes");
+                    console.log(highestCubeHeight, "highest cube");
                     spawnCube(1);
                 }
 
@@ -344,7 +345,6 @@
                 attemptClimb() {
                     if (this.canClimb()) {
                         this.move(yhat());
-                        highestCubeHeight = Math.max(highestCubeHeight, this.gridPosition.y);
                     }
                 }
 
@@ -473,6 +473,21 @@
                     }
                 }
 
+                aiHelper(direction, options) {
+                    if(this.check(direction.add(yhat().negate())) > -1 || this.gridPosition.y == 0) {
+                        this.aiAddOption(direction, options);
+                    }
+                    if (this.check(direction.multiplyScalar(2)) >= 0) {
+                        this.aiAddOption(direction, options);
+                    }
+                }
+
+                aiAddOption(direction, options) {
+                    if (this.check(direction) == -1) {
+                        options.push(direction);
+                    }
+                }
+
                 aiMove() {
                     //console.log("aiMove");
                     let d = this.checkDeath();
@@ -482,46 +497,47 @@
                         if(x) {
                             //console.log("canClimb");
                             this.move(yhat());
-                            highestCubeHeight = Math.max(highestCubeHeight, this.gridPosition.y);
+                            if (this.gridPosition.y > highestCubeHeight) {
+                                highestCubeHeight = this.gridPosition.y;
+                                console.log("hell yes", highestCubeHeight);
+                                //spawnCube(highestCubeHeight);
+                            }
                             //console.log(highestCubeHeight, "highest cube height");
                         } else {
                             let options = [];
-                            if (this.check(xhat()) == -1) {
-                                options.push(xhat());
-                                if (this.check(xhat().multiplyScalar(2)) >= 0) {
-                                    options.push(xhat());
-                                }
-                                if (positionRelativeToGridCenter(this.gridPosition).x < 0) {
-                                    options.push(xhat());
-                                }
-                            } 
-                            if (this.check(xhat().negate()) == -1) {
-                                options.push(xhat().negate());
-                                if (this.check(xhat().negate().multiplyScalar(2)) >= 0) {
-                                    options.push(xhat().negate());
-                                }
-                                if (positionRelativeToGridCenter(this.gridPosition).x > 0) {
-                                    options.push(xhat().negate());
-                                }
+                            options.push(zero());
+
+                            let v = positionRelativeToGridCenter(this.gridPosition).negate();
+
+                            if (Math.abs(v.x) >= 1) {
+                                this.aiAddOption(xhat().multiplyScalar(Math.sign(v.x)), options);
                             }
-                            if (this.check(zhat()) == -1) {
-                                options.push(zhat());
-                                if (this.check(zhat().multiplyScalar(2)) >= 0) {
-                                    options.push(zhat());
-                                }
-                                if (positionRelativeToGridCenter(this.gridPosition).z < 0) {
-                                    options.push(zhat());
-                                }
-                            } 
-                            if (this.check(zhat().negate()) == -1) {
-                                options.push(zhat().negate());
-                                if (this.check(zhat().negate().multiplyScalar(2)) >= 0) {
-                                    options.push(zhat().negate());
-                                }
-                                if (positionRelativeToGridCenter(this.gridPosition).z > 0) {
-                                    options.push(zhat().negate());
-                                }
+
+                            if (Math.abs(v.z) >= 1) {
+                                this.aiAddOption(zhat().multiplyScalar(Math.sign(v.z)), options);
                             }
+
+                            if (Math.abs(v.x) > Math.abs(v.z)) {
+                                this.aiAddOption(xhat().multiplyScalar(Math.sign(v.x)), options);
+                            } else if (Math.abs(v.x) < Math.abs(v.z)) {
+                                this.aiAddOption(zhat().multiplyScalar(Math.sign(v.z)), options);
+                            }
+
+                            this.aiHelper(xhat(), options);
+                            this.aiHelper(xhat().negate(), options);
+                            this.aiHelper(zhat(), options);
+                            this.aiHelper(zhat().negate(), options);
+
+
+                            //If you don't move, you're itchy. You need to move.
+                            if(options.length < 2 && this.gridPosition.y < highestCubeHeight / 2) {
+                                this.aiAddOption(xhat(), options);
+                                this.aiAddOption(xhat().negate(), options);
+                                this.aiAddOption(zhat().negate(), options);
+                                this.aiAddOption(zhat().negate(), options);
+                            }
+
+
                             //let c = options[rnd(options.length)]
                             //console.log(options, "options");
                             if (options.length > 0) {
@@ -539,8 +555,12 @@
             const geometry = new THREE.BoxGeometry();
             const livingCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xa7c330 } );
             let deadCubeMaterial = new THREE.MeshStandardMaterial( { color: 0x999980 } );
-            let activeCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xffffff } );
             let playerCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xB05C4C} );
+
+            let activeCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xffffff } );
+            let acmr = livingCubeMaterial.color.r;
+            let acmg = livingCubeMaterial.color.g;
+            let acmb = livingCubeMaterial.color.b;
 
             let cubes = [];
 
@@ -554,7 +574,7 @@
             //     scene.add(cubes[i].mesh);
             // }
 
-            spawnCube(900);
+            spawnCube(1500);
 
             function spawnCube(n) {
                 let i = 0;
@@ -577,7 +597,7 @@
             cubes[0].mesh.material = playerCubeMaterial;
 
             let highestCubeHeight = 0;
-            let cubesToMovePerTurn = 60;
+            let cubesToMovePerTurn = 100;
             let deadCubes = 0;
 
             if (cubesToMovePerTurn > cubes.length) {
@@ -608,19 +628,20 @@
                 }
 
             }
-            camera.rotation.x = -.2;
+            camera.rotation.x = -.4;
 
             let cameraBaseHeight = 15;
-            let rCameraBase = 50;
-            let rCamera = 50;
+            let rCameraBase = 30;
+            let rCamera = 30;
             let thetaCamera = 0;
-            let thetaCameraDot = 0.0008;
-            let rLight = 40
-            let thetaLight = 0
+            let thetaCameraDot = 0.008;
+            let rLight = 160;
+            let thetaLight = 0;
+            let thetaPlayer = 0;
 
             camera.position.set( 0, cameraBaseHeight, rCamera);
 
-            let updateTimeMs = 150;
+            let updateTimeMs = 200;
             let startTime = (new Date()).getTime();
             //console.log(startTime);
             let timeRunning = 0;
@@ -637,14 +658,45 @@
                     sec = Math.floor(timeRunning / updateTimeMs);
                     gameUpdate();
                 }
-
-                camera.rotateOnWorldAxis(yhat(), thetaCameraDot);
+                //camera.rotateOnWorldAxis(yhat(), thetaCameraDot);
                 thetaCamera += thetaCameraDot;
                 thetaLight -= 0.001;
-                camera.position.x = rCamera * Math.sin(thetaCamera) + maxGridCoordinate;
-                camera.position.z = rCamera * Math.cos(thetaCamera) + maxGridCoordinate;
-                camera.position.y = lerp(camera.position.y, cameraBaseHeight + highestCubeHeight * 0.65, 0.1);
-                rCamera = lerp(rCamera, rCameraBase + highestCubeHeight * 1.5, 0.1);
+                if (positionRelativeToGridCenter(cubes[0].gridPosition).length() > 0) {
+                    if (positionRelativeToGridCenter(cubes[0].gridPosition).x > 0) {
+                    thetaPlayer = Math.acos(positionRelativeToGridCenter(cubes[0].gridPosition).z / positionRelativeToGridCenter(cubes[0].gridPosition).length());
+                    } else if  (positionRelativeToGridCenter(cubes[0].gridPosition).x <= 0) {
+                    thetaPlayer = Math.acos(-positionRelativeToGridCenter(cubes[0].gridPosition).z / positionRelativeToGridCenter(cubes[0].gridPosition).length()) + Math.PI;
+                    }
+                }
+                
+
+                console.log(thetaPlayer, "= thetaPlayer");
+                console.log(positionRelativeToGridCenter(cubes[0].gridPosition).x, "x");
+                console.log(positionRelativeToGridCenter(cubes[0].gridPosition).z, "z");
+
+                camera.position.x = lerp(camera.position.x, rCamera * Math.sin(thetaPlayer) + cubes[0].mesh.position.x, 0.5);
+                camera.position.z = lerp(camera.position.z, rCamera * Math.cos(thetaPlayer) + cubes[0].mesh.position.z, 0.5);
+                camera.quaternion.identity();
+
+                camera.rotation.x = -.4;
+                //console.log(positionRelativeToGridCenter(cubes[0].gridPosition).z, "z");
+                //console.log(positionRelativeToGridCenter(cubes[0].gridPosition).x, "x");
+                //camera.rotateOnWorldAxis(yhat(), thetaPlayer);
+                camera.lookAt(cubes[0].mesh.position);
+
+
+                // camera.rotation.x = -1.56;
+                //camera.position.copy(cubes[0].mesh.position);
+                // camera.position.add(positionRelativeToGridCenter(cubes[0].mesh.position));
+                //camera.position.y += cameraBaseHeight;
+                // camera.quaternion.identity();
+                // camera.rotateOnWorldAxis(yhat(), Math.atan(cubes[0].mesh.position.z / cubes[0].mesh.position.x));
+                //camera.rotateZ(Math.PI /2);
+
+
+
+                //camera.position.y = lerp(camera.position.y, cameraBaseHeight + highestCubeHeight * .8, 0.1);
+                //rCamera = lerp(rCamera, rCameraBase + highestCubeHeight * 1.5, 0.1);
                 //console.log(camera.position.y);
 
                 dirLight.position.x = rLight * Math.sin(thetaLight);
@@ -654,6 +706,10 @@
                 for (let i=0;i<cubes.length;i++) {
                     cubes[i].mesh.position.lerp(cubes[i].gridPosition, 0.2);
                 }
+                
+                activeCubeMaterial.color.setRGB(Math.min((1 - acmr) / updateTimeMs * (timeRunning % updateTimeMs) * 2 + acmr, 1),
+                                                Math.min((1 - acmg) / updateTimeMs * (timeRunning % updateTimeMs) * 2 + acmg, 1),
+                                                Math.min((1 - acmb) / updateTimeMs * (timeRunning % updateTimeMs) * 2 + acmb, 1));
 
 
 				renderer.render( scene, camera );
