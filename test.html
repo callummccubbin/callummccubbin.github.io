@@ -690,6 +690,8 @@
                 //camera.rotateOnWorldAxis(yhat(), thetaPlayer);
                 camera.lookAt(cubes[0].mesh.position);
 
+                camera.position.y = lerp(camera.position.y, cubes[0].gridPosition.y + cameraBaseHeight, 0.2);
+
 
                 // camera.rotation.x = -1.56;
                 //camera.position.copy(cubes[0].mesh.position);
