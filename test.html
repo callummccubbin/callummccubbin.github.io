@@ -8,9 +8,25 @@
 		</style>
 	</head>
 	<body>
-        <audio id="au">
-            <source src="nlf.mp3" type="audio/mpeg">
+        <audio autoplay muted loop id="chord">
+            <source src="music/cubeslap-Helm 1-1.mp3" type="audio/mpeg">
         </audio>
+        <audio autoplay muted loop id="bass">
+            <source src="music/cubeslap-Helm 2-4.mp3" type="audio/mpeg">
+        </audio>
+        <audio autoplay muted loop id="pad">
+            <source src="music/cubeslap-Helm 3-6.mp3" type="audio/mpeg">
+        </audio>
+        <audio autoplay muted loop id="hat1">
+            <source src="music/cubeslap-Beat DRMR 1-2.mp3" type="audio/mpeg">
+        </audio>
+        <audio autoplay muted loop id="hat2">
+            <source src="music/cubeslap-Beat DRMR 1-3.mp3" type="audio/mpeg">
+        </audio>
+        <audio autoplay muted loop id="kick">
+            <source src="music/cubeslap-Beat DRMR 3-5.mp3" type="audio/mpeg">
+        </audio>
+
 		<script src="three.js"></script>
         <script type="x-shader/x-vertex" id="vertexShader">
 
@@ -45,51 +61,96 @@
 		</script>
 		<script>
 
-            //             //id = int, position = Vector3, box = BoxGeometry
-            // class cuboid {
-            //     constructor(id, position, box) {
-            //         this.id = id;
-            //         this.position = position;
-            //         this.box = box;
-            //     }
-            // }
+            let chord = document.getElementById("chord");
+            let bass = document.getElementById("bass");
+            let pad = document.getElementById("pad");
+            let hat1 = document.getElementById("hat1");
+            let hat2 = document.getElementById("hat2");
+            let kick = document.getElementById("kick");
+        
+            let muted = true;
+
+            let cameraMode = 0;
+            // cameraMode 0 is player-centered
+            // cameraMode 1 is the zoomed out version
             
+            window.addEventListener("keypress", function (event) {
+            if (event.defaultPrevented) {
+                return; // Do nothing if the event was already processed
+            }
+            switch (event.key) {
+                case "w":
+                    rotateControls(zhat().negate());
+                break;
+                case "s":
+                    rotateControls(zhat());
+                break;
+                case "a":
+                    rotateControls(xhat().negate());
+                break;
+                case "d":
+                    rotateControls(xhat());
+                break;
+                case "e":
+                    muted = false;
+                    chord.muted = false;
+                    bass.muted = false;
+                    kick.muted = false;
+                    hat1.muted = false;
+                    hat2.muted = false;
+                    pad.muted = false;
+                break;
+                case "r":
+                    muted = true;
+                break;
+                case "q":
+                    fastForward(50);
+                break;
+                case "z":
+                    cameraMode = 0;
+                break;
+                case "x":
+                    cameraMode = 1;
+                break;
+                case "t":
+                    fastForward(500);
+                break;
+                default:
+                return; // Quit when this doesn't handle the key event.
+            }
+            event.preventDefault();
+            }, true);
+
             window.addEventListener("keydown", function (event) {
             if (event.defaultPrevented) {
                 return; // Do nothing if the event was already processed
             }
-
-
             switch (event.key) {
                 case "ArrowDown":
-                    //console.log("death");
-                    //cubes[0].attemptMove(zhat());
                     rotateControls(zhat());
                 break;
                 case "ArrowUp":
-                    //console.log("up");
-                    //cubes[0].attemptMove(zhat().negate());
                     rotateControls(zhat().negate());
                 break;
                 case "ArrowLeft":
-                    //cubes[0].attemptMove(xhat().negate());
                     rotateControls(xhat().negate());
                 break;
                 case "ArrowRight":
-                    //cubes[0].attemptMove(xhat());
                     rotateControls(xhat());
                 break;
                 case " ":
                     cubes[0].attemptMove(yhat());
                 break;
-
                 default:
                 return; // Quit when this doesn't handle the key event.
             }
+            event.preventDefault();
+            }, true);
+
 
             function rotateControls(direction) {
                 let s = Math.round((thetaPlayer * 2 / Math.PI + 4)) % 4;
-                console.log(s, "=s");
+                //console.log(s, "=s");
                 let dir = new THREE.Vector3(0, 0, 0);
 
                 if (s == 0) {
@@ -106,10 +167,6 @@
                 //console.log("s = ", s);
                 cubes[0].attemptMove(dir);
             }
-
-            //Cancel the default action to avoid it being handled twice
-            event.preventDefault();
-            }, true);
 
             const scene = new THREE.Scene();
 
@@ -210,7 +267,7 @@
             // GRID
 
             const gridSize = maxGridCoordinate * 2 + 1;
-            const gridHeight = 200;
+            const gridHeight = 300;
  
             let grid = new Map();
 
@@ -562,7 +619,11 @@
 
             }
 
-            let nlf = document.getElementById("au");
+                
+            //let nlf = document.getElementById("au");
+            //let arp = document.getElementById("arp");
+
+
 
             const geometry = new THREE.BoxGeometry();
             const livingCubeMaterial = new THREE.MeshStandardMaterial( { color: 0xa7c330 } );
@@ -576,15 +637,6 @@
 
             let cubes = [];
 
-            // for (let i = 0; i < 2; i++) {
-            //     for (let j = 0; j < 1; j++) {
-            //         cubes.push(new cube(cubes.length, new THREE.Vector3(i, 0, j), new THREE.Mesh(geometry, livingCubeMaterial)));
-            //     }
-            // }
-
-            // for (let i = 0; i < cubes.length; i++) {
-            //     scene.add(cubes[i].mesh);
-            // }
 
             spawnCube(1500);
 
@@ -616,10 +668,58 @@
                 cubesToMovePerTurn = cubes.length - 1;
             }
 
+            function handleMusic() {
+                console.log("ayayayyaya", muted);
+                // player's height x2
+                // total max height
+                // number of dead cubes
+                // whether or not you are a murderer? Requires writing a new function
+
+                if (muted == false) {
+                    if (cubes[0].gridPosition.y > highestCubeHeight / 2) {
+                        pad.volume = lerp(pad.volume, 1, 0.05);
+                    } else {
+                        pad.volume = lerp(pad.volume, 0, 0.05);
+                    }
+
+                    if (deadCubes > 1500) {
+                        hat1.volume = lerp(hat1.volume, 1, 0.05);
+                        hat2.volume = lerp(hat2.volume, 1, 0.05);
+                    } else {
+                        hat1.volume = lerp(hat1.volume, 0, 0.05);
+                        hat2.volume = lerp(hat2.volume, 0, 0.05);
+                    }
+
+                    if (highestCubeHeight > gridHeight * 0.8) {
+                        kick.volume = lerp(kick.volume, 1, 0.05);
+                    } else {
+                        kick.volume = lerp(kick.volume, 0, 0.05);
+                    }
+                    chord.volume = lerp(chord.volume, 1, 0.05);
+                    bass.volume = lerp(bass.volume, 1, 0.05);
+                    kick.volume = lerp(kick.volume, 1, 0.05);
+                } else {
+                    chord.volume = lerp(chord.volume, 0, 0.05);
+                    bass.volume = lerp(bass.volume, 0, 0.05);
+                    kick.volume = lerp(kick.volume, 0, 0.05);
+                    hat1.volume = lerp(hat1.volume, 0, 0.05);
+                    hat2.volume = lerp(hat2.volume, 0, 0.05);
+                    pad.volume = lerp(pad.volume, 0, 0.05);
+                }
+                
+
+            }
+
+            function fastForward(n) {
+                for (let i=0;i<n;i++)
+                gameUpdate();
+            }
+
             function gameUpdate() {
 
-                if (cubes[0].gridPosition.y > highestCubeHeight - 1 && cubes[0].gridPosition.y > 12) {
-                    nlf.play();
+                if (cubes[0].gridPosition.y > highestCubeHeight - 1 && cubes[0].gridPosition.y > 6) {
+                    //nlf.play();
+                    //arp.play();
                 }
                 //console.log("max height =", highestCubeHeight);
 
@@ -646,7 +746,6 @@
                 }
 
             }
-            camera.rotation.x = -.4;
 
             let cameraBaseHeight = 15;
             let rCameraBase = 30;
@@ -667,6 +766,7 @@
 
 			function animate() {
 				requestAnimationFrame( animate );
+
 
                 timeRunning = (new Date()).getTime() - startTime;
                 //console.log(timeRunning/1000, "timerunning/1000");
@@ -704,18 +804,26 @@
                 //console.log(positionRelativeToGridCenter(cubes[0].gridPosition).x, "x");
                 //console.log(positionRelativeToGridCenter(cubes[0].gridPosition).z, "z");
 
-                camera.position.x = lerp(camera.position.x, rCamera * Math.sin(thetaPlayer) + cubes[0].mesh.position.x, 0.5);
-                camera.position.z = lerp(camera.position.z, rCamera * Math.cos(thetaPlayer) + cubes[0].mesh.position.z, 0.5);
-                camera.quaternion.identity();
+                if (cameraMode == 0) {
+                    rCamera = rCameraBase;
+                    camera.position.x = lerp(camera.position.x, rCamera * Math.sin(thetaPlayer) + cubes[0].mesh.position.x, 0.5);
+                    camera.position.z = lerp(camera.position.z, rCamera * Math.cos(thetaPlayer) + cubes[0].mesh.position.z, 0.5);
+                    camera.quaternion.identity();
 
-                //camera.rotation.x = -.4;
-                //console.log(positionRelativeToGridCenter(cubes[0].gridPosition).z, "z");
-                //console.log(positionRelativeToGridCenter(cubes[0].gridPosition).x, "x");
-                //camera.rotateOnWorldAxis(yhat(), thetaPlayer);
-                camera.lookAt(cubes[0].mesh.position);
+                    camera.lookAt(cubes[0].mesh.position);
 
-                camera.position.y = lerp(camera.position.y, cubes[0].mesh.position.y + cameraBaseHeight - Math.min(cubes[0].gridPosition.y * 0.4, 2 * cameraBaseHeight), 0.2);
+                    camera.position.y = lerp(camera.position.y, cubes[0].mesh.position.y + cameraBaseHeight - Math.min(cubes[0].gridPosition.y * 0.4, 2 * cameraBaseHeight), 0.2);
+                } else if (cameraMode == 1) {
+                    rCamera = lerp(rCamera, rCameraBase + highestCubeHeight * 1.75, 0.1);
+                    camera.quaternion.identity();
+                    camera.rotation.x = -0.3;
+                    camera.rotateOnWorldAxis(yhat(), thetaCamera);
+                    camera.position.x = rCamera * Math.sin(thetaCamera) + maxGridCoordinate;
+                    camera.position.z = rCamera * Math.cos(thetaCamera) + maxGridCoordinate;
+                    camera.position.y = lerp(camera.position.y, cameraBaseHeight + highestCubeHeight, 0.1);
+                }
 
+                
 
                 // camera.rotation.x = -1.56;
                 //camera.position.copy(cubes[0].mesh.position);
@@ -742,6 +850,7 @@
                                                 Math.min((1 - acmg) / updateTimeMs * (timeRunning % updateTimeMs) * 2 + acmg, 1),
                                                 Math.min((1 - acmb) / updateTimeMs * (timeRunning % updateTimeMs) * 2 + acmb, 1));
 
+                handleMusic();
 
 				renderer.render( scene, camera );
 			};
