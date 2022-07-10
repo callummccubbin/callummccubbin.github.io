@@ -41,7 +41,6 @@
                     gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
                 }
-
             </script>
             <script type="x-shader/x-fragment" id="fragmentShader">
 
@@ -584,21 +583,21 @@
                                 let options = [];
                                 options.push(zero());
 
-                                // let v = positionRelativeToGridCenter(this.gridPosition).negate();
+                                let v = positionRelativeToGridCenter(this.gridPosition).negate();
 
-                                // if (Math.abs(v.x) >= 1) {
-                                //     this.aiAddOption(xhat().multiplyScalar(Math.sign(v.x)), options);
-                                // }
+                                if (Math.abs(v.x) >= 1) {
+                                    this.aiAddOption(xhat().multiplyScalar(Math.sign(v.x)), options);
+                                }
 
-                                // if (Math.abs(v.z) >= 1) {
-                                //     this.aiAddOption(zhat().multiplyScalar(Math.sign(v.z)), options);
-                                // }
+                                if (Math.abs(v.z) >= 1) {
+                                    this.aiAddOption(zhat().multiplyScalar(Math.sign(v.z)), options);
+                                }
 
-                                // if (Math.abs(v.x) > Math.abs(v.z)) {
-                                //     this.aiAddOption(xhat().multiplyScalar(Math.sign(v.x)), options);
-                                // } else if (Math.abs(v.x) < Math.abs(v.z)) {
-                                //     this.aiAddOption(zhat().multiplyScalar(Math.sign(v.z)), options);
-                                // }
+                                if (Math.abs(v.x) > Math.abs(v.z)) {
+                                    this.aiAddOption(xhat().multiplyScalar(Math.sign(v.x)), options);
+                                } else if (Math.abs(v.x) < Math.abs(v.z)) {
+                                    this.aiAddOption(zhat().multiplyScalar(Math.sign(v.z)), options);
+                                }
 
                                 this.aiHelper(xhat(), options);
                                 this.aiHelper(xhat().negate(), options);
