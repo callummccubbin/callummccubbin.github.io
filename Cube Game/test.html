@@ -6,8 +6,12 @@
 		<style>
 			body { margin: 0; }
 		</style>
+        <link href="../styles/style1.css" rel = "stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Maven+Pro&display=swap" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Montserrat:wght@500&display=swap" rel="stylesheet"> 
 	</head>
-	<body class="hideOverflow" onclick="toggleNav()"    >
+	<body class="hideOverflow" onclick="toggleNav()">
         <div class="blueBG">
             <audio autoplay muted loop id="chord">
                 <source src="music/cube slap-Helm 1-1.mp3" type="audio/mpeg">
@@ -29,6 +33,8 @@
             </audio>
 
             <script src="three.js"></script>
+            <script src="math.js"></script>
+            <script src="cube.js"></script>
             <script type="x-shader/x-vertex" id="vertexShader">
 
                 varying vec3 vWorldPosition;
@@ -229,7 +235,7 @@
                 const groundMat = new THREE.MeshLambertMaterial( { color: 0xffffff } );
                 groundMat.color.setHSL( 0.095, 1, 0.75 );
 
-                const maxGridCoordinate = 25;
+                const maxGridCoordinate = 30;
 
                 const ground = new THREE.Mesh( groundGeo, groundMat );
                 ground.position.y = -500.4  ;
@@ -272,31 +278,6 @@
     
                 let grid = new Map();
 
-                function encodePos(pos) {
-                    if (pos.x >= 0 &&
-                        pos.y >= 0 &&
-                        pos.z >= 0 &&
-                        pos.x < gridSize &&
-                        pos.y < gridHeight &&
-                        pos.z < gridSize) {
-
-                        let gridKey = pos.x + (pos.y * gridSize) + (pos.z * (gridSize * gridHeight));
-                        return gridKey;
-                    } else {
-                        return -1;
-                    }
-                    
-                }
-
-                function decodeGridKey(gridKey) {
-                    let x = gridKey % gridSize;
-                    //let y = ((gridKey - x) % (gridSize ** 2)) / gridSize;
-                    let y = ((gridKey - x) / gridSize) % gridHeight;
-                    //let z = (gridKey - x - (y * gridSize)) / (gridSize ** 2);
-                    let z = (((gridKey - x) / gridSize) - y) / gridHeight;
-                    return new THREE.Vector3(x, y, z);
-                }
-
                 // -1 means there's empty space
                 // 0 and greater is a cube of that id number
 
@@ -306,327 +287,9 @@
                 gridHelper.position.z = maxGridCoordinate;
                 gridHelper.position.y = -0.4;
 
-                //
-
-                function xhat() {
-                    vec = new THREE.Vector3(1, 0, 0);
-                    return vec;
-                }
-                function yhat() {
-                    vec = new THREE.Vector3(0, 1, 0);
-                    return vec;
-                }
-                function zhat() {
-                    vec = new THREE.Vector3(0, 0, 1);
-                    return vec;
-                }
-                function zero() {
-                    vec = new THREE.Vector3(0, 0, 0);
-                    return vec;
-                }
-
-                function lerp(x, y, t) {
-                    return x + t * (y - x);
-                }
-
-                function rnd(x) {
-                    return Math.floor(Math.random() * x);
-                }
-
-                function positionRelativeToGridCenter(pos) {
-                    let pos2 = new THREE.Vector3(0, 0, 0);
-                    pos2.copy(pos);
-                    let gridCenter = new THREE.Vector3(maxGridCoordinate + 1, 0, maxGridCoordinate + 1);
-                    return pos2.add(gridCenter.negate());
-                }
-
                 // -----------------------------------------
 
-                class cube {
-                    constructor(id, gridPosition, mesh) {
-                        this.id = id;
-                        this.gridPosition = new THREE.Vector3(0, 0, 0);
-                        this.gridPosition.copy(gridPosition);
-                        this.mesh = mesh;
-                        this.mesh.receiveShadow = true;
-                        this.mesh.castShadow = true;
-                        this.mesh.position.copy(this.gridPosition);
-                        this.alive = true;
-                        this.player = false;
-                        this.active = 0;
-                        grid.set(encodePos(this.gridPosition), this.id);
-                        //console.log(grid.get(encodePos(this.gridPosition)), "is at", encodePos(this.gridPosition));
-                    }
-
-                    checkDeath() {
-
-                        let danger = this.check(xhat()) >= 0 &&
-                                    this.check(zhat()) >= 0 &&
-                                    this.check(xhat().negate()) >= 0 &&
-                                    this.check(zhat().negate()) >= 0 &&
-                                    this.check(yhat()) >= 0;
-
-
-                        //console.log("above me is", this.check(yhat()));
-                        
-                        if (danger) {
-                            this.die();
-                            return true;
-                        }
-                    }
                 
-                    die() {
-                        //console.log("I am die.");
-                        //console.log(this.mesh.material.color);
-                        this.alive = false;
-                        this.mesh.material = deadCubeMaterial;
-                        this.active = false;
-                        deadCubes++;
-                        console.log(deadCubes, "dead cubes");
-                        console.log(highestCubeHeight, "highest cube");
-                            spawnCube(1);
-                    }
-
-                    canClimb() {
-                        if(this.check(xhat()) >= 0 ||
-                        this.check(xhat().negate()) >= 0 ||
-                        this.check(zhat()) >= 0 ||
-                        this.check(zhat().negate()) >= 0) {
-                            //console.log("above me is", this.check(yhat()));
-                            if (this.check(yhat()) == -1) {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        } else {
-                            return false;
-                        }
-                    }
-
-                    // attemptClimb() {
-                    //     //if (this.canClimb()) {
-                    //         this.move(yhat());
-                    //         console.log("Hhhhhhhhhhhh");
-                    //         if (this.gridPosition.y >= 3) {
-                    //                 highestCubeHeight = this.gridPosition.y;
-                    //                 console.log("hhhhhhhhhhhhhhhh");
-                    //                 nlf.play();
-                    //                 //spawnCube(highestCubeHeight);
-                    //         }
-                    //     //}
-                    // }
-
-                    checkFall() {
-
-                        let safe = this.check(new THREE.Vector3(0,-1,-1)) > -1 ||
-                                    this.check(new THREE.Vector3(0,-1,0)) > -1 ||
-                                    this.check(new THREE.Vector3(0,-1,1)) > -1 ||
-                                    this.check(new THREE.Vector3(1,-1,0)) > -1 ||
-                                    this.check(new THREE.Vector3(-1,-1,0)) > -1;
-
-                        if (this.gridPosition.y == 0) {
-                            safe = true;
-                        }   
-                        if (!safe) {
-                            // descend unto the earth
-                            this.fall();
-                        }
-                    }
-
-                    fallReaction(n) {
-                        //console.log("fallreact for cube", this.id);
-
-                        let p = new THREE.Vector3(0, 0, 0);
-                        
-                        p.copy(this.gridPosition);
-                        p.add(n.negate());
-                        
-                        let p2 = new THREE.Vector3(0, 0, 0);
-                        p2.copy(p);
-
-                        p2.add(yhat());
-                        if (grid.has(encodePos(p2))) {
-                            cubes[grid.get(encodePos(p2))].checkFall();
-                        }
-
-                        p2.x += 1;
-                        if (grid.has(encodePos(p2))) {
-                            cubes[grid.get(encodePos(p2))].checkFall();
-                        }
-
-                        p2.x -= 2;
-
-                        if (grid.has(encodePos(p2))) {
-                            cubes[grid.get(encodePos(p2))].checkFall();
-                        }
-
-                        p2.x += 1;
-                        p2.z += 1;
-
-                        if (grid.has(encodePos(p2))) {
-                            cubes[grid.get(encodePos(p2))].checkFall();
-                        }
-                        
-                        p2.z -= 2;
-
-                        if (grid.has(encodePos(p2))) {
-                            cubes[grid.get(encodePos(p2))].checkFall();
-                        }
-
-                        //let f = 0;
-                        // for (let i=-1;i<2;i++) {
-                        //     for (let j=-1;j<2;j++) {
-                        //         f = this.check(new THREE.Vector3(i - n.x,1 - n.y,j - n.z));
-                        //         //console.log(i, j);
-                        //         if (f > -1) {
-                        //         //console.log(f, "is above them");
-                        //         cubes[f].checkFall();
-                        //         }
-                        //     }
-                        // }
-                    }
-
-                    fall() {
-                        //console.log(this.id, "is falling");
-                        this.move(yhat().negate());                    
-                    }
-
-                    check(direction) {
-                        let newPos = new THREE.Vector3(0, 0, 0);
-                        newPos.copy(this.gridPosition);
-                        newPos.x += direction.x;
-                        newPos.y += direction.y;
-                        newPos.z += direction.z;
-
-                        if (newPos.x < gridSize &&
-                            newPos.y < gridHeight &&
-                            newPos.z < gridSize &&
-                        newPos.x >= 0 &&
-                        newPos.y >= 0 &&
-                        newPos.z >= 0) {  
-
-                            if (!grid.has(encodePos(newPos))) {
-                                return -1;
-                            } else {
-                                return grid.get(encodePos(newPos));
-                            }
-                        } else {
-                            return -2;
-                        }
-                    }
-
-                    move(direction) {
-                        let newPos = new THREE.Vector3(0, 0, 0);
-                    
-                        newPos.copy(this.gridPosition);
-
-                        newPos.x += direction.x;
-                        newPos.y += direction.y;
-                        newPos.z += direction.z;
-                        
-                        //console.log(newPos.x + " newPos.x");
-                        //console.log(this.gridPosition.x + " gridPosition.x");
-
-                        grid.delete(encodePos(this.gridPosition));
-                        grid.set(encodePos(newPos), this.id);
-                        this.gridPosition = newPos;
-                        //console.log("moving in ", direction);
-                        this.fallReaction(direction);
-                        this.checkFall();
-                    }
-
-                    attemptMove(direction) {
-                        if (this.check(direction) == -1) {
-                            this.move(direction);
-                        }
-                    }
-
-                    aiHelper(direction, options) {
-                        if(this.check(direction.add(yhat().negate())) > -1 || this.gridPosition.y == 0) {
-                            this.aiAddOption(direction, options);
-                        }
-                        if (this.check(direction.multiplyScalar(2)) >= 0) {
-                            this.aiAddOption(direction, options);
-                            this.aiAddOption(direction, options);
-                        }
-                        let b = yhat();
-                        b.cross(direction);
-                        let c = zero();
-                        if (this.check(c.addVectors(direction, b)) >= 0) {
-                            this.aiAddOption(direction, options);
-                            this.aiAddOption(b, options);
-                        }
-                    }
-
-                    aiAddOption(direction, options) {
-                        if (this.check(direction) == -1) {
-                            options.push(direction);
-                        }
-                    }
-
-                    aiMove() {
-                        //console.log("aiMove");
-                        let d = this.checkDeath();
-
-                        if(!d) {
-                            let x = this.canClimb();
-                            if(x) {
-                                //console.log("canClimb");
-                                this.move(yhat());
-                                if (this.gridPosition.y > highestCubeHeight) {
-                                    highestCubeHeight = this.gridPosition.y;
-                                    //console.log("hell yes", highestCubeHeight);
-                                    //spawnCube(highestCubeHeight);
-                                }
-                                //console.log(highestCubeHeight, "highest cube height");
-                            } else {
-                                let options = [];
-                                options.push(zero());
-
-                                let v = positionRelativeToGridCenter(this.gridPosition).negate();
-
-                                if (Math.abs(v.x) >= 1) {
-                                    this.aiAddOption(xhat().multiplyScalar(Math.sign(v.x)), options);
-                                }
-
-                                if (Math.abs(v.z) >= 1) {
-                                    this.aiAddOption(zhat().multiplyScalar(Math.sign(v.z)), options);
-                                }
-
-                                if (Math.abs(v.x) > Math.abs(v.z)) {
-                                    this.aiAddOption(xhat().multiplyScalar(Math.sign(v.x)), options);
-                                } else if (Math.abs(v.x) < Math.abs(v.z)) {
-                                    this.aiAddOption(zhat().multiplyScalar(Math.sign(v.z)), options);
-                                }
-
-                                this.aiHelper(xhat(), options);
-                                this.aiHelper(xhat().negate(), options);
-                                this.aiHelper(zhat(), options);
-                                this.aiHelper(zhat().negate(), options);
-
-
-                                //If you don't move, you're itchy. You need to move.
-                                if(options.length < 2 && this.gridPosition.y < rnd(highestCubeHeight)) {
-                                    this.aiAddOption(xhat(), options);
-                                    this.aiAddOption(xhat().negate(), options);
-                                    this.aiAddOption(zhat(), options);
-                                    this.aiAddOption(zhat().negate(), options);
-                                }
-
-
-                                //let c = options[rnd(options.length)]
-                                //console.log(options, "options");
-                                if (options.length > 0) {
-                                    this.move(options[rnd(options.length)]);
-                                }
-                            }
-                            this.active = 0;
-                            this.mesh.material = livingCubeMaterial;
-                        }
-
-                    }
-
-                }
 
                     
                 //let nlf = document.getElementById("au");
@@ -645,9 +308,9 @@
                 let acmb = livingCubeMaterial.color.b;
 
                 let cubes = [];
+                let movingCubes = [];
 
-
-                spawnCube(1500);
+                spawnCube(2000);
 
                 function spawnCube(n) {
                     let i = 0;
@@ -660,7 +323,7 @@
                             i++;
                         }
                         j++;
-                        if (j > 100000) {
+                        if (j > (2 * (gridSize ** 2))) {
                             break;
                         }
                     }
@@ -673,12 +336,12 @@
                 let cubesToMovePerTurn = 100;
                 let deadCubes = 0;
 
+                // can't move more cubes than there exist in a turn
                 if (cubesToMovePerTurn > cubes.length) {
                     cubesToMovePerTurn = cubes.length - 1;
                 }
 
                 function handleMusic() {
-                    //console.log("ayayayyaya", muted);
                     // player's height x2
                     // total max height
                     // number of dead cubes
@@ -724,6 +387,16 @@
                     gameUpdate();
                 }
 
+                //function returns true if the cube's mesh's position is outside acceptable distance from its grid position.
+                // Then, it gets to stay in the movingCubes array.
+                mdcThreshold = 0.01;
+                function meshDistanceCheck(value, index, array) {
+                    x = zero();
+                    x.subVectors(cubes[value].mesh.position, cubes[value].gridPosition) ;
+                    //console.log(x.length(), Math.abs(x.length()) < mdcThreshold);
+                    return Math.abs(x.length()) > mdcThreshold;
+                }
+
                 function gameUpdate() {
 
                     if (cubes[0].gridPosition.y > highestCubeHeight - 1 && cubes[0].gridPosition.y > 6) {
@@ -732,13 +405,12 @@
                     }
                     //console.log("max height =", highestCubeHeight);
 
-                    //console.log("h");
-
                     for (let i=0;i<cubes.length;i++) {
                         if (cubes[i].active == 1) {
                             cubes[i].aiMove();
                         }
                     }
+                    //console.log(movingCubes);
 
                     let i = 0;
                     while (i < cubesToMovePerTurn) {
@@ -764,6 +436,7 @@
                 let rLight = 160;
                 let thetaLight = 0;
                 let thetaPlayer = 0;
+                let cubeLerp = 0.1;
 
                 camera.position.set( 0, cameraBaseHeight, rCamera);
 
@@ -774,7 +447,6 @@
                 let sec = 0;
 
                 function animate() {
-                    requestAnimationFrame( animate );
 
 
                     timeRunning = (new Date()).getTime() - startTime;
@@ -805,9 +477,15 @@
                         }
                     }
                     
-                    for (let i=0;i<cubes.length;i++) {
-                        cubes[i].mesh.position.lerp(cubes[i].gridPosition, 0.2);
+                    //console.log("before check", movingCubes.length);
+                    movingCubes = movingCubes.filter(meshDistanceCheck);
+                    //console.log("after check", movingCubes.length);
+                    //console.log(movingCubes);
+                    for (i=0;i<movingCubes.length;i++) {
+                        cubes[movingCubes[i]].mesh.position.lerp(cubes[movingCubes[i]].gridPosition, cubeLerp);
                     }
+                    
+
 
                     //console.log(thetaPlayer, "= thetaPlayer");
                     //console.log(positionRelativeToGridCenter(cubes[0].gridPosition).x, "x");
@@ -815,8 +493,8 @@
 
                     if (cameraMode == 0) {
                         rCamera = rCameraBase;
-                        camera.position.x = lerp(camera.position.x, rCamera * Math.sin(thetaPlayer) + cubes[0].mesh.position.x, 0.5);
-                        camera.position.z = lerp(camera.position.z, rCamera * Math.cos(thetaPlayer) + cubes[0].mesh.position.z, 0.5);
+                        camera.position.x = rCamera * Math.sin(thetaPlayer) + cubes[0].mesh.position.x;
+                        camera.position.z = rCamera * Math.cos(thetaPlayer) + cubes[0].mesh.position.z;
                         camera.quaternion.identity();
 
                         camera.lookAt(cubes[0].mesh.position);
@@ -827,13 +505,12 @@
                         camera.quaternion.identity();
                         camera.rotation.x = -0.3;
                         camera.rotateOnWorldAxis(yhat(), thetaCamera);
-                        camera.position.x = rCamera * Math.sin(thetaCamera) + maxGridCoordinate;
-                        camera.position.z = rCamera * Math.cos(thetaCamera) + maxGridCoordinate;
-                        camera.position.y = lerp(camera.position.y, cameraBaseHeight + highestCubeHeight, 0.1);
+                        camera.position.x = lerp(camera.position.x, rCamera * Math.sin(thetaCamera) + maxGridCoordinate, cubeLerp);
+                        camera.position.z = lerp(camera.position.z, rCamera * Math.cos(thetaCamera) + maxGridCoordinate, cubeLerp);
+                        camera.position.y = lerp(camera.position.y, cameraBaseHeight + highestCubeHeight, cubeLerp);
                     }
 
-                    
-
+                
                     // camera.rotation.x = -1.56;
                     //camera.position.copy(cubes[0].mesh.position);
                     // camera.position.add(positionRelativeToGridCenter(cubes[0].mesh.position));
@@ -862,12 +539,14 @@
                     handleMusic();
 
                     renderer.render( scene, camera );
+
+                    requestAnimationFrame( animate );
                 };
                 animate();
             </script>
             <script>
                 function toggleNav() {
-                    console.log("sef0");
+                    //console.log("sef0");
                     if (document.getElementById("mySidenav").style.width == "300px") {
                         document.getElementById("mySidenav").style.width = "0";
                     } else {
@@ -881,17 +560,15 @@
             </script>
         </div>
 
-        <div class="blue" ></div>
-
         <div id="mySidenav" class="sidenav">
-            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
             <div class="sidenavInterior">
                 <style>
                     a {
                         margin-top: 15px;
                     }
                 </style>
-                <a href="index.html" class="exit">Exit</a>
+                <a href="../index.html" class="exit">Exit</a>
 
                 <label for="a1">Number of Worms to generate</label>
                 <input type="range" min="1" max="30" value="12" class="slider" id="a1">
