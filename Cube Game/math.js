@@ -23,10 +23,16 @@ function rnd(x) {
     return Math.floor(Math.random() * x);
 }
 
+function int(x) {
+    y = x * 1;
+    return y;
+}
+
 function positionRelativeToGridCenter(pos) {
     let pos2 = new THREE.Vector3(0, 0, 0);
     pos2.copy(pos);
-    let gridCenter = new THREE.Vector3(maxGridCoordinate + 1, 0, maxGridCoordinate + 1);
+    let gridCenter = new THREE.Vector3(int(maxGridCoordinate), 0, int(maxGridCoordinate));
+    //console.log(gridCenter, "gridCenter", maxGridCoordinate);
     return pos2.add(gridCenter.negate());
 }
 
@@ -43,7 +49,6 @@ function encodePos(pos) {
     } else {
         return -1;
     }
-    
 }
 
 function decodeGridKey(gridKey) {

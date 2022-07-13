@@ -15,7 +15,8 @@ class cube {
     }
 
     checkDeath() {
-
+        //console.log(this.gridPosition, "gp");
+        //console.log(this.mesh.position, "mp");
         let danger = this.check(xhat()) >= 0 &&
                     this.check(zhat()) >= 0 &&
                     this.check(xhat().negate()) >= 0 &&
@@ -41,6 +42,11 @@ class cube {
         console.log(deadCubes, "dead cubes");
         console.log(highestCubeHeight, "highest cube");
             spawnCube(1);
+    }
+
+    expunge() {
+        scene.remove(this.mesh);
+        grid.set(encodePos(this.gridPosition), -1);
     }
 
     canClimb() {
@@ -243,6 +249,7 @@ class cube {
                 options.push(zero());
 
                 let v = positionRelativeToGridCenter(this.gridPosition).negate();
+                //console.log(this.gridPosition);
 
                 if (Math.abs(v.x) >= 1) {
                     this.aiAddOption(xhat().multiplyScalar(Math.sign(v.x)), options);
@@ -265,7 +272,7 @@ class cube {
 
 
                 //If you don't move, you're itchy. You need to move.
-                if(options.length < 2 && this.gridPosition.y < rnd(highestCubeHeight)) {
+                if(options.length < 2 && this.gridPosition.y < rnd(highestCubeHeight + 1)) {
                     this.aiAddOption(xhat(), options);
                     this.aiAddOption(xhat().negate(), options);
                     this.aiAddOption(zhat(), options);

@@ -44,7 +44,7 @@ let mouseOrbitOmega = inputs[6].value;
 const tailDistBetween = 2;
 const componentLerp = 0.2;
 
-console.log(tails);
+//console.log(tails);
 
 function toggleNav() {
     if (document.getElementById("mySidenav").style.width == "300px") {
