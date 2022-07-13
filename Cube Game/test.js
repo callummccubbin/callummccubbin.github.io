@@ -163,28 +163,32 @@ const dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
 dirLight.color.setHSL( 0.1, 1, 0.95 );
 dirLight.position.set( - 1, 1.75, 1 );
 dirLight.position.multiplyScalar( 90 );
+scene.add(dirLight.target);
+dirLight.target.position.copy(new THREE.Vector3(maxGridCoordinate, 0, maxGridCoordinate));
+
 scene.add( dirLight );
 
 //const cameraHelper = new THREE.CameraHelper(dirLight.shadow.camera);
-//  scene.add(cameraHelper);
+//scene.add(cameraHelper);
 
 dirLight.castShadow = true;
 
 dirLight.shadow.mapSize.width = 4096;
 dirLight.shadow.mapSize.height = 4096;
 
-const d = 20;
+const d = 40;
 
 dirLight.shadow.camera.left = - d;
 dirLight.shadow.camera.right = d;
 dirLight.shadow.camera.top = d;
 dirLight.shadow.camera.bottom = - d;
+//dirLight.shadow.camera.position.set(new THREE.Vector3(10, 0, 10));
 
 dirLight.shadow.camera.far = 3500;
 dirLight.shadow.bias = - 0.000001;
 
-const dirLightHelper = new THREE.DirectionalLightHelper( dirLight, 10 );
-scene.add( dirLightHelper );
+//const dirLightHelper = new THREE.DirectionalLightHelper( dirLight, 10 );
+//scene.add( dirLightHelper );
 
 // // GROUND
 
@@ -518,7 +522,6 @@ function animate() {
 
     dirLight.position.x = rLight * Math.sin(thetaLight);
     dirLight.position.z = rLight * Math.cos(thetaLight);
-    //dirlight.lookAt(zero());
 
     //console.log(cubes[0].gridPosition.x);
     
