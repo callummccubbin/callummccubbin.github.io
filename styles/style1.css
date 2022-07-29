@@ -140,6 +140,7 @@
 
     .projectSection {
         overflow: auto;
+        padding-bottom: 10px;
     }
 
     .PSTitle {

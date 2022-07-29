@@ -2,6 +2,8 @@ function $(x) {
     return document.getElementById(x);
 }
 
+let screenResolution = new THREE.Vector2( window.innerWidth, window.innerHeight );
+
 let inputs = [];
 let outputs = [];
 
